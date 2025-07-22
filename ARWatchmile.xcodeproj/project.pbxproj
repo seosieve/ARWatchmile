@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		CFEA269A2E2F78A400B810F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CFEA267B2E2F78A200B810F5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CFEA26822E2F78A200B810F5;
+			remoteInfo = ARWatchmile;
+		};
+		CFEA26A42E2F78A400B810F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CFEA267B2E2F78A200B810F5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CFEA26822E2F78A200B810F5;
+			remoteInfo = ARWatchmile;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		CFEA26832E2F78A200B810F5 /* ARWatchmile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARWatchmile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFEA26992E2F78A400B810F5 /* ARWatchmileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARWatchmileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CFEA26A32E2F78A400B810F5 /* ARWatchmileUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARWatchmileUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CFEA26AB2E2F78A400B810F5 /* Exceptions for "ARWatchmile" folder in "ARWatchmile" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CFEA26822E2F78A200B810F5 /* ARWatchmile */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CFEA26852E2F78A200B810F5 /* ARWatchmile */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CFEA26AB2E2F78A400B810F5 /* Exceptions for "ARWatchmile" folder in "ARWatchmile" target */,
+			);
+			path = ARWatchmile;
+			sourceTree = "<group>";
+		};
+		CFEA269C2E2F78A400B810F5 /* ARWatchmileTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ARWatchmileTests;
+			sourceTree = "<group>";
+		};
+		CFEA26A62E2F78A400B810F5 /* ARWatchmileUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ARWatchmileUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CFEA26802E2F78A200B810F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA26962E2F78A400B810F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA26A02E2F78A400B810F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CFEA267A2E2F78A200B810F5 = {
+			isa = PBXGroup;
+			children = (
+				CFEA26852E2F78A200B810F5 /* ARWatchmile */,
+				CFEA269C2E2F78A400B810F5 /* ARWatchmileTests */,
+				CFEA26A62E2F78A400B810F5 /* ARWatchmileUITests */,
+				CFEA26842E2F78A200B810F5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CFEA26842E2F78A200B810F5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CFEA26832E2F78A200B810F5 /* ARWatchmile.app */,
+				CFEA26992E2F78A400B810F5 /* ARWatchmileTests.xctest */,
+				CFEA26A32E2F78A400B810F5 /* ARWatchmileUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CFEA26822E2F78A200B810F5 /* ARWatchmile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFEA26AC2E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmile" */;
+			buildPhases = (
+				CFEA267F2E2F78A200B810F5 /* Sources */,
+				CFEA26802E2F78A200B810F5 /* Frameworks */,
+				CFEA26812E2F78A200B810F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CFEA26852E2F78A200B810F5 /* ARWatchmile */,
+			);
+			name = ARWatchmile;
+			packageProductDependencies = (
+			);
+			productName = ARWatchmile;
+			productReference = CFEA26832E2F78A200B810F5 /* ARWatchmile.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CFEA26982E2F78A400B810F5 /* ARWatchmileTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFEA26B12E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmileTests" */;
+			buildPhases = (
+				CFEA26952E2F78A400B810F5 /* Sources */,
+				CFEA26962E2F78A400B810F5 /* Frameworks */,
+				CFEA26972E2F78A400B810F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CFEA269B2E2F78A400B810F5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CFEA269C2E2F78A400B810F5 /* ARWatchmileTests */,
+			);
+			name = ARWatchmileTests;
+			packageProductDependencies = (
+			);
+			productName = ARWatchmileTests;
+			productReference = CFEA26992E2F78A400B810F5 /* ARWatchmileTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CFEA26A22E2F78A400B810F5 /* ARWatchmileUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CFEA26B42E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmileUITests" */;
+			buildPhases = (
+				CFEA269F2E2F78A400B810F5 /* Sources */,
+				CFEA26A02E2F78A400B810F5 /* Frameworks */,
+				CFEA26A12E2F78A400B810F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CFEA26A52E2F78A400B810F5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CFEA26A62E2F78A400B810F5 /* ARWatchmileUITests */,
+			);
+			name = ARWatchmileUITests;
+			packageProductDependencies = (
+			);
+			productName = ARWatchmileUITests;
+			productReference = CFEA26A32E2F78A400B810F5 /* ARWatchmileUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CFEA267B2E2F78A200B810F5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					CFEA26822E2F78A200B810F5 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					CFEA26982E2F78A400B810F5 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = CFEA26822E2F78A200B810F5;
+					};
+					CFEA26A22E2F78A400B810F5 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = CFEA26822E2F78A200B810F5;
+					};
+				};
+			};
+			buildConfigurationList = CFEA267E2E2F78A200B810F5 /* Build configuration list for PBXProject "ARWatchmile" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CFEA267A2E2F78A200B810F5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CFEA26842E2F78A200B810F5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CFEA26822E2F78A200B810F5 /* ARWatchmile */,
+				CFEA26982E2F78A400B810F5 /* ARWatchmileTests */,
+				CFEA26A22E2F78A400B810F5 /* ARWatchmileUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CFEA26812E2F78A200B810F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA26972E2F78A400B810F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA26A12E2F78A400B810F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CFEA267F2E2F78A200B810F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA26952E2F78A400B810F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFEA269F2E2F78A400B810F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CFEA269B2E2F78A400B810F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CFEA26822E2F78A200B810F5 /* ARWatchmile */;
+			targetProxy = CFEA269A2E2F78A400B810F5 /* PBXContainerItemProxy */;
+		};
+		CFEA26A52E2F78A400B810F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CFEA26822E2F78A200B810F5 /* ARWatchmile */;
+			targetProxy = CFEA26A42E2F78A400B810F5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CFEA26AD2E2F78A400B810F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ARWatchmile/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmile;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CFEA26AE2E2F78A400B810F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ARWatchmile/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmile;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CFEA26AF2E2F78A400B810F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CFEA26B02E2F78A400B810F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CFEA26B22E2F78A400B810F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmileTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARWatchmile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ARWatchmile";
+			};
+			name = Debug;
+		};
+		CFEA26B32E2F78A400B810F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmileTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ARWatchmile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ARWatchmile";
+			};
+			name = Release;
+		};
+		CFEA26B52E2F78A400B810F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmileUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ARWatchmile;
+			};
+			name = Debug;
+		};
+		CFEA26B62E2F78A400B810F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 95KTQ65K5N;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = vestella.ARWatchmileUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ARWatchmile;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CFEA267E2E2F78A200B810F5 /* Build configuration list for PBXProject "ARWatchmile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFEA26AF2E2F78A400B810F5 /* Debug */,
+				CFEA26B02E2F78A400B810F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CFEA26AC2E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFEA26AD2E2F78A400B810F5 /* Debug */,
+				CFEA26AE2E2F78A400B810F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CFEA26B12E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmileTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFEA26B22E2F78A400B810F5 /* Debug */,
+				CFEA26B32E2F78A400B810F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CFEA26B42E2F78A400B810F5 /* Build configuration list for PBXNativeTarget "ARWatchmileUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFEA26B52E2F78A400B810F5 /* Debug */,
+				CFEA26B62E2F78A400B810F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CFEA267B2E2F78A200B810F5 /* Project object */;
+}

@@ -8,7 +8,6 @@
 import UIKit
 import ARKit
 import RealityKit
-import simd
 
 class ViewController: UIViewController, ARSessionDelegate {
     
@@ -18,6 +17,8 @@ class ViewController: UIViewController, ARSessionDelegate {
     let analysisCooldown: TimeInterval = 0.5 // 업데이트 주기를 0.5초로 변경
     var setOriginButton: UIButton! // 원점 설정 버튼
     var positionLabel: UILabel! // 위치 표시 레이블
+    var statusLabel: UILabel! // 상태 표시 레이블
+    var isMapMatched = false // 맵 매칭 상태
     
     // World Map 저장 경로
     var worldMapURL: URL {
@@ -48,6 +49,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         
         setupButtons()
         setupPositionLabel()
+        setupStatusLabel()
 
         // Scene Reconstruction 사용 가능 여부 확인
         guard ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) else {
@@ -58,16 +60,80 @@ class ViewController: UIViewController, ARSessionDelegate {
         startARSession()
     }
     
+    func setupStatusLabel() {
+        statusLabel = UILabel()
+        statusLabel.textAlignment = .center
+        statusLabel.font = .systemFont(ofSize: 16, weight: .medium)
+        statusLabel.textColor = .white
+        statusLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        statusLabel.layer.cornerRadius = 8
+        statusLabel.layer.masksToBounds = true
+        
+        let labelHeight: CGFloat = 32
+        statusLabel.frame = CGRect(
+            x: 20,
+            y: positionLabel.frame.minY - labelHeight - 8,
+            width: view.bounds.width - 40,
+            height: labelHeight
+        )
+        
+        updateStatusLabel(status: .searching)
+        view.addSubview(statusLabel)
+    }
+    
+    enum TrackingStatus {
+        case searching
+        case matching
+        case matched
+        case notFound
+        
+        var description: String {
+            switch self {
+            case .searching:
+                return "주변 환경 스캔 중..."
+            case .matching:
+                return "저장된 맵과 매칭 중..."
+            case .matched:
+                return "✅ 위치 파악 완료"
+            case .notFound:
+                return "❌ 저장된 맵을 찾을 수 없습니다"
+            }
+        }
+        
+        var color: UIColor {
+            switch self {
+            case .searching, .matching:
+                return .systemYellow
+            case .matched:
+                return .systemGreen
+            case .notFound:
+                return .systemRed
+            }
+        }
+    }
+    
+    func updateStatusLabel(status: TrackingStatus) {
+        DispatchQueue.main.async {
+            self.statusLabel.text = status.description
+            self.statusLabel.textColor = status.color
+        }
+    }
+    
     func startARSession() {
         let config = ARWorldTrackingConfiguration()
         config.sceneReconstruction = .mesh
         config.environmentTexturing = .automatic
         config.planeDetection = [.horizontal, .vertical]
         
+        isMapMatched = false
+        
         // 저장된 맵이 있으면 자동으로 로드
         if let worldMap = loadWorldMap() {
             config.initialWorldMap = worldMap
             print("저장된 맵을 자동으로 불러왔습니다.")
+            updateStatusLabel(status: .matching)
+        } else {
+            updateStatusLabel(status: .notFound)
         }
 
         arView.session.delegate = self
@@ -159,8 +225,10 @@ class ViewController: UIViewController, ARSessionDelegate {
             let relativeX = position.x - originX
             let relativeZ = position.z - originZ
             
-            // 소수점 한 자리까지 표시
-            let formattedText = String(format: "(%.1f, %.1f)", relativeX, relativeZ)
+            // 매칭되지 않은 상태면 좌표를 표시하지 않음
+            let formattedText = isMapMatched ? 
+                String(format: "(%.1f, %.1f)", relativeX, relativeZ) :
+                "위치 파악 중..."
             
             DispatchQueue.main.async {
                 self.positionLabel.text = formattedText
@@ -384,6 +452,36 @@ class ViewController: UIViewController, ARSessionDelegate {
           • Y: \(minBounds.y)m ~ \(maxBounds.y)m
           • Z: \(minBounds.z)m ~ \(maxBounds.z)m
         """)
+    }
+
+    // ARSession 델리게이트 메서드 추가
+    func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
+        switch camera.trackingState {
+        case .normal:
+            // 트래킹이 정상이고 월드맵이 로드된 상태라면
+            if let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
+               originArray.count == 2 {
+                isMapMatched = true
+                updateStatusLabel(status: .matched)
+            } else {
+                updateStatusLabel(status: .searching)
+            }
+        case .limited(let reason):
+            isMapMatched = false
+            switch reason {
+            case .initializing:
+                updateStatusLabel(status: .searching)
+            case .relocalizing:
+                updateStatusLabel(status: .matching)
+            default:
+                updateStatusLabel(status: .searching)
+            }
+        case .notAvailable:
+            isMapMatched = false
+            updateStatusLabel(status: .notFound)
+        @unknown default:
+            break
+        }
     }
 }
 

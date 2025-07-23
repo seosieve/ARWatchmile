@@ -27,7 +27,7 @@ class MapViewController: UIViewController, UIScrollViewDelegate {
         scrollView.backgroundColor = .black
         scrollView.showsVerticalScrollIndicator = true
         scrollView.showsHorizontalScrollIndicator = true
-        scrollView.minimumZoomScale = 0.5
+        scrollView.minimumZoomScale = 0.4
         scrollView.maximumZoomScale = 3.0
         scrollView.frame = view.bounds
         view.addSubview(scrollView)
@@ -66,7 +66,20 @@ class MapViewController: UIViewController, UIScrollViewDelegate {
         
         // 닫기 버튼을 safeArea 아래로 충분히 내림
         let safeTop = view.safeAreaInsets.top
-        closeButton.frame = CGRect(x: 20, y: safeTop + 20, width: 60, height: 40)
+        let buttonY = safeTop + 20
+        let buttonHeight: CGFloat = 40
+        closeButton.frame = CGRect(x: 20, y: buttonY, width: 60, height: buttonHeight)
+        
+        // 정보 레이블 위치 업데이트 (닫기 버튼과 정확히 같은 높이)
+        if let infoLabel = view.subviews.first(where: { $0 is UILabel && ($0 as! UILabel).text?.contains("저장된 포인트") == true }) as? UILabel {
+            infoLabel.sizeToFit()
+            infoLabel.frame = CGRect(
+                x: view.bounds.width - infoLabel.frame.width - 20,
+                y: buttonY + (buttonHeight - infoLabel.frame.height) / 2, // 수직 중앙 정렬
+                width: infoLabel.frame.width,
+                height: infoLabel.frame.height
+            )
+        }
     }
     
     private func drawMap() {
@@ -136,15 +149,25 @@ class MapViewController: UIViewController, UIScrollViewDelegate {
         // 격자 그리기
         drawGrid(in: mapFrame, minX: minX, maxX: maxX, minZ: minZ, maxZ: maxZ)
         
-        // 정보 표시
+        // 정보 표시 - 닫기 버튼과 수평으로 맨 오른쪽에 배치
         let infoLabel = UILabel()
         infoLabel.text = "저장된 포인트: \(savedMeshPoints.count)개\n실시간 포인트: \(currentMeshPoints.count)개"
         infoLabel.numberOfLines = 2
         infoLabel.textColor = .white
         infoLabel.textAlignment = .right
         infoLabel.font = .systemFont(ofSize: 12)
-        infoLabel.frame = CGRect(x: mapView.bounds.width - 200, y: 10, width: 190, height: 40)
-        mapView.addSubview(infoLabel)
+        infoLabel.sizeToFit()
+        // 닫기 버튼과 정확히 같은 높이에 배치
+        let safeTop = view.safeAreaInsets.top
+        let buttonY = safeTop + 20
+        let buttonHeight: CGFloat = 40
+        infoLabel.frame = CGRect(
+            x: view.bounds.width - infoLabel.frame.width - 20,
+            y: buttonY + (buttonHeight - infoLabel.frame.height) / 2, // 수직 중앙 정렬
+            width: infoLabel.frame.width,
+            height: infoLabel.frame.height
+        )
+        view.addSubview(infoLabel)
         
         // 범례 표시
         let legendView = UIView(frame: CGRect(x: 10, y: 10, width: 200, height: 50))
@@ -183,7 +206,7 @@ class MapViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func drawPoints(points: [SIMD3<Float>], color: UIColor, minX: Float, minZ: Float, mapFrame: CGRect) {
-        // 10개의 포인트마다 1개만 사용
+        // 10개의 포인트마다 1개만 사용 (성능 최적화)
         for i in stride(from: 0, to: points.count, by: 10) {
             let point = points[i]
             guard point.x.isFinite && point.z.isFinite else { continue }

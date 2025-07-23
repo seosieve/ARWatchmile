@@ -26,7 +26,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         return documentsPath.appendingPathComponent("worldmap.arexperience")
     }
-
+    
     // 메시 데이터 구조체
     struct MeshData: Codable {
         var vertices: [SIMD3<Float>]
@@ -41,10 +41,10 @@ class ViewController: UIViewController, ARSessionDelegate {
             return try? JSONDecoder().decode(MeshData.self, from: data)
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         arView = ARView(frame: view.bounds)
         view.addSubview(arView)
         
@@ -52,13 +52,13 @@ class ViewController: UIViewController, ARSessionDelegate {
         setupPositionLabel()
         setupStatusLabel()
         setupMapViewButton()
-
+        
         // Scene Reconstruction 사용 가능 여부 확인
         guard ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) else {
             print("Scene Reconstruction 지원 안됨")
             return
         }
-
+        
         startARSession()
     }
     
@@ -140,7 +140,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         } else {
             updateStatusLabel(status: .searching)
         }
-
+        
         arView.session.delegate = self
         arView.session.run(config)
         
@@ -154,7 +154,16 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func checkTrackingStatus() {
-        guard !isMapMatched else { return }
+        // 이미 매칭된 상태라면 트래킹 상태만 확인
+        if isMapMatched {
+            let trackingState = arView.session.currentFrame?.camera.trackingState
+            if trackingState != .normal {
+                // 트래킹이 불안정해지면 매칭 상태 해제
+                isMapMatched = false
+                updateStatusLabel(status: .searching)
+            }
+            return
+        }
         
         arView.session.getCurrentWorldMap { [weak self] worldMap, error in
             guard let self = self,
@@ -166,7 +175,8 @@ class ViewController: UIViewController, ARSessionDelegate {
             let quality = min(Float(pointCount) / 100.0, 1.0)
             
             DispatchQueue.main.async {
-                if quality >= 1.0 && self.arView.session.currentFrame?.camera.trackingState == .normal {
+                // 매칭 기준 완화: 50% 이상이면 매칭 성공
+                if quality >= 0.5 && self.arView.session.currentFrame?.camera.trackingState == .normal {
                     self.isMapMatched = true
                     self.updateStatusLabel(status: .matched)
                 } else {
@@ -236,8 +246,8 @@ class ViewController: UIViewController, ARSessionDelegate {
         // 현재 위치를 원점으로 저장
         let transform = currentFrame.camera.transform
         let position = SIMD3<Float>(transform.columns.3.x,
-                                  transform.columns.3.y,
-                                  transform.columns.3.z)
+                                    transform.columns.3.y,
+                                    transform.columns.3.z)
         
         UserDefaults.standard.set([position.x, position.z], forKey: "permanent_origin")
         
@@ -255,7 +265,7 @@ class ViewController: UIViewController, ARSessionDelegate {
                     // 3초 후 버튼 상태 복원
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         self.setOriginButton.backgroundColor = .systemBlue
-                        self.setOriginButton.setTitle("이 위치를 원점(0,0)으로 설정", for: .normal)
+                        self.setOriginButton.setTitle("원점 설정", for: .normal)
                     }
                 }
                 return
@@ -372,8 +382,8 @@ class ViewController: UIViewController, ARSessionDelegate {
                 if let currentFrame = self.arView.session.currentFrame {
                     let transform = currentFrame.camera.transform
                     let position = SIMD3<Float>(transform.columns.3.x,
-                                              transform.columns.3.y,
-                                              transform.columns.3.z)
+                                                transform.columns.3.y,
+                                                transform.columns.3.z)
                     UserDefaults.standard.set([position.x, position.z], forKey: "permanent_origin") // y축 제외
                 }
             } catch {
@@ -407,12 +417,21 @@ class ViewController: UIViewController, ARSessionDelegate {
             saveMeshData(for: meshAnchor)
         }
     }
-
+    
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         for anchor in anchors {
             guard let meshAnchor = anchor as? ARMeshAnchor else { continue }
-//            print("🔄 메쉬 업데이트 - id: \(meshAnchor.identifier)")
+            // 업데이트 시에는 변경사항이 있을 때만 저장 (saveMeshData 내부에서 처리)
             saveMeshData(for: meshAnchor)
+        }
+    }
+    
+    // 메쉬 삭제 감지 및 방지
+    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+        for anchor in anchors {
+            guard let meshAnchor = anchor as? ARMeshAnchor else { continue }
+            print("⚠️ 메쉬 삭제됨 - id: \(meshAnchor.identifier)")
+            // 메쉬가 삭제되어도 저장된 데이터는 유지 (파일에서 삭제하지 않음)
         }
     }
     
@@ -428,15 +447,15 @@ class ViewController: UIViewController, ARSessionDelegate {
         
         let cameraTransform = frame.camera.transform
         let currentPosition = SIMD3<Float>(cameraTransform.columns.3.x,
-                                         cameraTransform.columns.3.y,
-                                         cameraTransform.columns.3.z)
+                                           cameraTransform.columns.3.y,
+                                           cameraTransform.columns.3.z)
         
         updatePositionLabel(position: currentPosition)
         
         // 카메라가 바라보는 방향 (정면 벡터)
         let cameraForward = normalize(SIMD3<Float>(-cameraTransform.columns.2.x,
-                                                  -cameraTransform.columns.2.y,
-                                                  -cameraTransform.columns.2.z))
+                                                    -cameraTransform.columns.2.y,
+                                                    -cameraTransform.columns.2.z))
         
         // 주변 환경 분석
         analyzeEnvironment(cameraPosition: currentPosition, cameraForward: cameraForward, frame: frame)
@@ -444,19 +463,17 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func analyzeEnvironment(cameraPosition: SIMD3<Float>, cameraForward: SIMD3<Float>, frame: ARFrame) {
         var nearestDistance: Float = .infinity
-        var nearestMeshID: UUID?
         
         // 모든 메시를 순회하며 가장 가까운 메시 찾기
         for (id, _) in meshData {
             if let meshAnchor = frame.anchors.first(where: { $0.identifier == id }) as? ARMeshAnchor {
                 let meshPosition = SIMD3<Float>(meshAnchor.transform.columns.3.x,
-                                              meshAnchor.transform.columns.3.y,
-                                              meshAnchor.transform.columns.3.z)
+                                                meshAnchor.transform.columns.3.y,
+                                                meshAnchor.transform.columns.3.z)
                 
                 let distance = length(meshPosition - cameraPosition)
                 if distance < nearestDistance {
                     nearestDistance = distance
-                    nearestMeshID = id
                 }
             }
         }
@@ -475,14 +492,14 @@ class ViewController: UIViewController, ARSessionDelegate {
         
         // 바닥 높이 추정
         if let raycastResult = arView.raycast(from: view.center,
-                                            allowing: .estimatedPlane,
-                                            alignment: .horizontal).first {
+                                              allowing: .estimatedPlane,
+                                              alignment: .horizontal).first {
             let floorY = raycastResult.worldTransform.columns.3.y
             print("- 현재 바닥과의 높이: \(String(format: "%.2f", cameraPosition.y - floorY))m")
         }
     }
     
-    // 메시 데이터 저장
+    // 메시 데이터 저장 (중복 방지 및 파일 기반)
     func saveMeshData(for meshAnchor: ARMeshAnchor) {
         let geometry = meshAnchor.geometry
         let vertices = geometry.vertices
@@ -495,39 +512,73 @@ class ViewController: UIViewController, ARSessionDelegate {
             positions = Array(vertices)
         }
         
-        // MeshData 생성
-        let newMeshData = MeshData(vertices: positions, timestamp: Date())
-        newMeshData.encode().map { encodedData in
-            // UserDefaults에 저장
-            UserDefaults.standard.set(encodedData, forKey: "mesh_\(meshAnchor.identifier.uuidString)")
+        // 로컬 좌표를 월드 좌표로 변환
+        var worldPositions: [SIMD3<Float>] = []
+        for vertex in positions {
+            let worldVertex = meshAnchor.transform * SIMD4(vertex, 1.0)
+            worldPositions.append(SIMD3<Float>(worldVertex.x, worldVertex.y, worldVertex.z))
         }
+        
+        // 간단한 저장 방식: 새로운 데이터로 덮어쓰기 (매칭 안정성 우선)
+        let newMeshData = MeshData(vertices: worldPositions, timestamp: Date())
+        
+        // 파일로 저장
+        saveMeshDataToFile(meshData: newMeshData, identifier: meshAnchor.identifier)
         
         // 메모리에도 저장
         meshData[meshAnchor.identifier] = newMeshData
         
-//        print("💾 메시 데이터 저장됨 - vertices: \(positions.count)")
+        print("💾 메시 데이터 저장됨 - id: \(meshAnchor.identifier), vertices: \(worldPositions.count)")
     }
     
-    // 저장된 메시 데이터 불러오기
-    func loadMeshData() {
-        let defaults = UserDefaults.standard
-        let keys = defaults.dictionaryRepresentation().keys.filter { $0.hasPrefix("mesh_") }
+    // 파일로 메시 데이터 저장
+    func saveMeshDataToFile(meshData: MeshData, identifier: UUID) {
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let fileURL = documentsPath.appendingPathComponent("mesh_\(identifier.uuidString).data")
         
-        for key in keys {
-            if let data = defaults.data(forKey: key),
-               let meshData = MeshData.decode(from: data) {
-                let uuid = UUID(uuidString: String(key.dropFirst(5)))!
-                self.meshData[uuid] = meshData
-                print("📤 메시 데이터 로드됨 - id: \(uuid), vertices: \(meshData.vertices.count)")
-            }
+        do {
+            let encodedData = try JSONEncoder().encode(meshData)
+            try encodedData.write(to: fileURL)
+        } catch {
+            print("❌ 메시 데이터 저장 실패: \(error)")
         }
     }
-
+    
+    // 저장된 메시 데이터 불러오기 (파일 기반)
+    func loadMeshData() {
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        
+        do {
+            let files = try FileManager.default.contentsOfDirectory(at: documentsPath, includingPropertiesForKeys: nil)
+            let meshFiles = files.filter { $0.lastPathComponent.hasPrefix("mesh_") && $0.lastPathComponent.hasSuffix(".data") }
+            
+            for fileURL in meshFiles {
+                do {
+                    let data = try Data(contentsOf: fileURL)
+                    if let meshData = MeshData.decode(from: data) {
+                        let fileName = fileURL.lastPathComponent
+                        let uuidString = String(fileName.dropFirst(5).dropLast(5)) // "mesh_" 제거, ".data" 제거
+                        if let uuid = UUID(uuidString: uuidString) {
+                            self.meshData[uuid] = meshData
+                            print("📤 메시 데이터 로드됨 - id: \(uuid), vertices: \(meshData.vertices.count)")
+                        }
+                    }
+                } catch {
+                    print("❌ 메시 데이터 로드 실패: \(fileURL.lastPathComponent) - \(error)")
+                }
+            }
+            
+            print("📊 총 \(meshData.count)개의 메시 데이터 로드 완료")
+        } catch {
+            print("❌ 메시 데이터 디렉토리 읽기 실패: \(error)")
+        }
+    }
+    
     func analyzeMeshData(for meshAnchor: ARMeshAnchor) {
         let geometry = meshAnchor.geometry
         let vertices = geometry.vertices
         var positions: [SIMD3<Float>] = []
-
+        
         // vertex 데이터 추출
         let vertexBuffer = Data(bytes: vertices.buffer.contents(), count: vertices.count * vertices.stride)
         vertexBuffer.withUnsafeBytes { buffer in
@@ -575,7 +626,7 @@ class ViewController: UIViewController, ARSessionDelegate {
           • Z: \(minBounds.z)m ~ \(maxBounds.z)m
         """)
     }
-
+    
     // ARSession 델리게이트 메서드 추가
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         switch camera.trackingState {

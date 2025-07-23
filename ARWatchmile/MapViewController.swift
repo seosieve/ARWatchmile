@@ -1,7 +1,7 @@
 import UIKit
 import ARKit
 
-class MapViewController: UIViewController {
+class MapViewController: UIViewController, UIScrollViewDelegate {
     
     var savedMeshPoints: [SIMD3<Float>] = []
     var currentMeshPoints: [SIMD3<Float>] = []
@@ -16,6 +16,7 @@ class MapViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         drawMap()
+        scrollView.delegate = self // 줌을 위해 delegate 지정
     }
     
     private func setupUI() {
@@ -349,5 +350,10 @@ class MapViewController: UIViewController {
     
     @objc private func closeTapped() {
         dismiss(animated: true)
+    }
+
+    // UIScrollViewDelegate - 줌 지원
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return mapView
     }
 } 

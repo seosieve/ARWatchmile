@@ -21,9 +21,11 @@ class ARSessionManager: NSObject, ARSessionDelegate {
     
     func startARSession() {
         let config = ARWorldTrackingConfiguration()
+        config.isLightEstimationEnabled = true
         config.sceneReconstruction = .mesh
         config.environmentTexturing = .automatic
         config.planeDetection = [.horizontal, .vertical]
+        config.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
         isMapMatched = false
         if let worldMap = loadWorldMap() {
             config.initialWorldMap = worldMap

@@ -11,6 +11,7 @@ import RealityKit
 
 class ViewController: UIViewController {
     var arSessionManager: ARSessionManager!
+    var arModelManager: ARModelManager!
     var setOriginButton: UIButton!
     var positionLabel: UILabel!
     var statusLabel: UILabel!
@@ -20,10 +21,12 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         arSessionManager = ARSessionManager()
         arSessionManager.arView = ARView(frame: view.bounds)
+        arModelManager = ARModelManager()
         view.addSubview(arSessionManager.arView)
         setupButtons()
         setupPositionLabel()
         setupStatusLabel()
+        setObjectLabel()
         setupMapViewButton()
         arSessionManager.startARSession()
         // 카메라 위치 업데이트 콜백 연결
@@ -60,6 +63,45 @@ class ViewController: UIViewController {
         
         updateStatusLabel(status: .searching)
         view.addSubview(statusLabel)
+    }
+    
+    func setObjectLabel() {
+        let placeObjectButton = UIButton(type: .system)
+        placeObjectButton.setTitle("(-2.5, -2.5)에 물체 배치", for: .normal)
+        placeObjectButton.backgroundColor = .systemBlue
+        placeObjectButton.setTitleColor(.white, for: .normal)
+        placeObjectButton.layer.cornerRadius = 8
+        placeObjectButton.addTarget(self, action: #selector(placeObjectAtMinus4Minus4), for: .touchUpInside)
+        placeObjectButton.frame = CGRect(x: 20, y: 180, width: 150, height: 50)
+        view.addSubview(placeObjectButton)
+    }
+    
+    @objc func placeObjectAtMinus4Minus4() {
+        placeObjectAtCoordinates(x: 0, z: 0)
+        placeObjectAtCoordinates(x: -3.2, z: -2.2)
+        placeObjectAtCoordinates(x: -6.5, z: -6.0)
+        placeObjectAtCoordinates(x: -5.5, z: 0.2)
+        placeObjectAtCoordinates(x: -2.2, z: 3.3)
+        placeObjectAtCoordinates(x: -7, z: -2.1)
+        placeObjectAtCoordinates(x: -0.6, z: -4.7)
+    }
+    
+    func placeObjectAtCoordinates(x: Float, z: Float) {
+        guard let originData = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
+              originData.count == 2 else {
+            print("❌ 원점을 먼저 설정해주세요")
+            return
+        }
+        
+        let originPoint = SIMD3<Float>(originData[0], 0, originData[1])
+        let absolutePosition = originPoint + SIMD3<Float>(x, 0, z)
+        
+        let objectTransform = matrix_float4x4(translation: absolutePosition)
+        let anchor = ARAnchor(transform: objectTransform)
+        arSessionManager.arView.session.add(anchor: anchor)
+        
+        arModelManager.addModelToAnchor(anchor, view: arSessionManager.arView)
+        print("물체 배치 완료: 원점에서 (\(x), 0, \(z))")
     }
     
     func updateStatusLabel(status: TrackingStatus) {
@@ -186,7 +228,7 @@ class ViewController: UIViewController {
         let relativeZ = position.z - originZ
         
         // 소수점 한 자리까지 표시
-        let formattedText = String(format: "(%.1f, %.1f)", relativeX, relativeZ)
+        let formattedText = String(format: "(%.1f, %.1f, %.1f)", relativeX, position.y, relativeZ)
         
         DispatchQueue.main.async {
             self.positionLabel.text = formattedText
@@ -194,3 +236,9 @@ class ViewController: UIViewController {
     }
 }
 
+extension matrix_float4x4 {
+    init(translation: SIMD3<Float>) {
+        self = matrix_identity_float4x4
+        self.columns.3 = SIMD4<Float>(translation.x, translation.y, translation.z, 1.0)
+    }
+}

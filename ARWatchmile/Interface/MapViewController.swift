@@ -98,8 +98,8 @@ class MapViewController: UIViewController, UIScrollViewDelegate {
         let mapWidth = CGFloat(maxX - minX) * scale
         let mapHeight = CGFloat(maxZ - minZ) * scale
         guard mapWidth > 0, mapWidth.isFinite,
-              mapHeight > 0, mapHeight.isFinite,
-              mapWidth < 20000, mapHeight < 20000 else {
+              mapHeight > 0, mapHeight.isFinite
+        else {
             let label = UILabel()
             label.text = "맵 크기가 유효하지 않습니다\(mapWidth), \(mapHeight)"
             label.textColor = .white

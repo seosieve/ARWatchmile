@@ -9,7 +9,7 @@ import UIKit
 import ARKit
 import RealityKit
 
-class ViewController: UIViewController {
+class ARViewController: UIViewController {
     var arSessionManager: ARSessionManager!
     var arModelManager: ARModelManager!
     var setOriginButton: UIButton!
@@ -184,7 +184,7 @@ class ViewController: UIViewController {
     }
     
     @objc func mapViewButtonTapped() {
-        let mapVC = MapViewController()
+        let mapVC = FeaturePointViewController()
         mapVC.modalPresentationStyle = .fullScreen
         if let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float], originArray.count == 2 {
             mapVC.originPoint = CGPoint(x: CGFloat(originArray[0]), y: CGFloat(originArray[1]))

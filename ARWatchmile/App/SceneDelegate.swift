@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //상수 사용을 위해 이름을 넣습니다.
         let viewController = UIWindow(windowScene: windowScene)
         //최초 진입 뷰 컨트롤러를 지정합니다.
-        viewController.rootViewController = ViewController()
+        viewController.rootViewController = MapViewController()
         //창을 활성화하고 표시합니다.
         viewController.makeKeyAndVisible()
         //self.window에 생성한 윈도우를 지정합니다.

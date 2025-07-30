@@ -1,7 +1,6 @@
-import Foundation
+import UIKit
 import ARKit
 import RealityKit
-import UIKit
 
 class ARSessionManager: NSObject, ARSessionDelegate {
     var arView: ARView!
@@ -10,13 +9,15 @@ class ARSessionManager: NSObject, ARSessionDelegate {
     let analysisCooldown: TimeInterval = 0.5
     var onCameraPositionUpdate: ((SIMD3<Float>) -> Void)?
     var onTrackingStatusUpdate: ((TrackingStatus) -> Void)?
-    var worldMapURL: URL {
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return documentsPath.appendingPathComponent("worldmap.arexperience")
-    }
+    lazy var worldMapURL = getWorldMapURL()
     
     override init() {
         super.init()
+    }
+    
+    func getWorldMapURL() -> URL {
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return documentsPath.appendingPathComponent("worldmap.arexperience")
     }
     
     func startARSession() {
@@ -94,11 +95,11 @@ class ARSessionManager: NSObject, ARSessionDelegate {
         guard Date().timeIntervalSince(lastAnalysisTime) >= analysisCooldown else { return }
         lastAnalysisTime = Date()
         let cameraTransform = frame.camera.transform
-        let currentPosition = SIMD3<Float>(cameraTransform.columns.3.x,
-                                           cameraTransform.columns.3.y,
-                                           cameraTransform.columns.3.z)
+        let (x,y,z) = (cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+        let currentPosition = SIMD3<Float>(x,y,z)
         onCameraPositionUpdate?(currentPosition)
     }
+    
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         switch camera.trackingState {
         case .normal:
@@ -113,14 +114,17 @@ class ARSessionManager: NSObject, ARSessionDelegate {
             break
         }
     }
+    
     func session(_ session: ARSession, didFailWithError error: Error) {
         isMapMatched = false
         onTrackingStatusUpdate?(.notFound)
     }
+    
     func sessionWasInterrupted(_ session: ARSession) {
         isMapMatched = false
         onTrackingStatusUpdate?(.searching)
     }
+    
     func sessionInterruptionEnded(_ session: ARSession) {
         onTrackingStatusUpdate?(.matching(0.0))
         startARSession()

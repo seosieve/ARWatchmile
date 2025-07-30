@@ -77,7 +77,7 @@ extension TiltViewController {
             UIView.animate(
                     withDuration: 0.8,
                     delay: 0,
-                    usingSpringWithDamping: 0.7, // 스프링 강도 (0~1, 낮을수록 튀는 효과)
+                    usingSpringWithDamping: 0.7,  // 스프링 강도 (0~1, 낮을수록 튀는 효과)
                     initialSpringVelocity: 0.5,   // 초기 속도
                     options: [.curveEaseInOut],
                     animations: {

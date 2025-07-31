@@ -4,7 +4,9 @@ import RealityKit
 
 class ARSessionManager: NSObject, ARSessionDelegate {
     var arView: ARView!
+    var arModelManager: ARModelManager?
     var isMapMatched = false
+    var objectsPlacedInSession = false // 세션 내에서만 사용하는 플래그
     var lastAnalysisTime: Date = Date()
     let analysisCooldown: TimeInterval = 0.5
     var onCameraPositionUpdate: ((SIMD3<Float>) -> Void)?
@@ -28,14 +30,10 @@ class ARSessionManager: NSObject, ARSessionDelegate {
         
         let config = ARWorldTrackingConfiguration()
         config.isLightEstimationEnabled = true
-        // sceneReconstruction을 제거하거나 .none으로 설정
-        // config.sceneReconstruction = .mesh
-        // environmentTexturing을 .none으로 설정하여 EnvironmentProbe 문제 해결
         config.environmentTexturing = .none
         config.planeDetection = [.horizontal, .vertical]
-        // frameSemantics를 제거하여 메모리 사용량 감소
-        // config.frameSemantics = [.sceneDepth, .smoothedSceneDepth]
         isMapMatched = false
+        objectsPlacedInSession = false // 세션 시작 시 플래그 초기화
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -50,8 +48,6 @@ class ARSessionManager: NSObject, ARSessionDelegate {
             
             arView.session.delegate = self
             arView.session.run(config)
-            // debugOptions를 제거하거나 최소화
-            // arView.debugOptions = [.showSceneUnderstanding]
         }
     }
     
@@ -66,13 +62,29 @@ class ARSessionManager: NSObject, ARSessionDelegate {
                 let matched = (quality >= 0.5 && self.arView.session.currentFrame?.camera.trackingState == .normal)
                 let trackingState = self.arView.session.currentFrame?.camera.trackingState
                 print("quality: \(quality), trackingState: \(String(describing: trackingState))")
+                
                 if matched {
                     self.isMapMatched = true
                     self.onTrackingStatusUpdate?(.matched)
+                    
+                    // 위치 매칭 완료 시 물체 자동 배치
+                    self.placeObjectsWhenMatched()
                 } else {
                     self.onTrackingStatusUpdate?(.matching(quality))
                 }
             }
+        }
+    }
+    
+    // MARK: - 위치 매칭 완료 시 물체 배치
+    private func placeObjectsWhenMatched() {
+        // 세션 내에서 한 번만 배치
+        if !objectsPlacedInSession {
+            arModelManager?.placeMultipleObjects(arView: arView)
+            objectsPlacedInSession = true
+            print("🎯 위치 매칭 완료! 물체 자동 배치됨")
+        } else {
+            print("🎯 위치 매칭 완료! (이미 이 세션에서 배치됨)")
         }
     }
     

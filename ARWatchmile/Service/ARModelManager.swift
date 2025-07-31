@@ -41,6 +41,29 @@ class ARModelManager {
         print("🎯 \(positions.count)개 물체 배치 완료")
     }
     
+    // MARK: - 객체 위치들 가져오기
+    func getObjectPositions() -> [SIMD3<Float>] {
+        guard let originData = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
+              originData.count == 2 else {
+            return []
+        }
+        
+        let originPoint = SIMD3<Float>(originData[0], 0, originData[1])
+        let positions = [
+            (x: Float(0), z: Float(0)),
+            (x: Float(-3.2), z: Float(-2.2)),
+            (x: Float(-6.5), z: Float(-6.0)),
+            (x: Float(-5.5), z: Float(0.2)),
+            (x: Float(-2.2), z: Float(3.3)),
+            (x: Float(-7), z: Float(-2.1)),
+            (x: Float(-0.6), z: Float(-4.7))
+        ]
+        
+        return positions.map { position in
+            originPoint + SIMD3<Float>(position.x, 0, position.z)
+        }
+    }
+    
     func placeObjectAtCoordinates(x: Float, z: Float, arView: ARView) {
         guard let originData = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
               originData.count == 2 else {

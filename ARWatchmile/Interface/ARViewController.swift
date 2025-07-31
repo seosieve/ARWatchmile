@@ -12,7 +12,10 @@ import RealityKit
 class ARViewController: UIViewController {
     var arSessionManager: ARSessionManager!
     var arModelManager: ARModelManager!
-    var mapViewButton: UIButton!
+    
+    // AR 세션 시작 시점의 초기 방향 저장
+    private var initialYaw: Float = 0.0
+    private var isInitialYawSet = false
     
     private var statusLabel = UILabel().then {
         $0.textAlignment = .center
@@ -33,6 +36,8 @@ class ARViewController: UIViewController {
         $0.layer.masksToBounds = true
     }
     
+    private var miniMapView = MiniMapView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,12 +54,20 @@ class ARViewController: UIViewController {
             self.view.addSubview(self.arSessionManager.arView)
             initUI()
             updateStatusLabel(status: .searching)
-            self.setupMapViewButton()
             self.arSessionManager.startARSession()
             
             // 카메라 위치 업데이트 콜백 연결
             self.arSessionManager.onCameraPositionUpdate = { [weak self] position in
                 self?.updatePositionLabel(position: position)
+                self?.updateMiniMapDirection()
+            }
+            
+            // 초기 방향 설정을 위한 타이머 (첫 번째 프레임에서 초기 방향 저장)
+            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+                guard let self = self else { return }
+                if !self.isInitialYawSet {
+                    self.setInitialDirection()
+                }
             }
             
             // 트래킹 상태 업데이트 콜백 연결
@@ -87,6 +100,12 @@ class ARViewController: UIViewController {
             make.bottom.equalTo(positionLabel.snp.top).offset(-8)
             make.height.equalTo(32)
         }
+        
+        view.addSubview(miniMapView)
+        miniMapView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.right.equalToSuperview().offset(-20)
+        }
     }
     
     func updateStatusLabel(status: TrackingStatus) {
@@ -95,27 +114,6 @@ class ARViewController: UIViewController {
             self.statusLabel.text = status.description
             self.statusLabel.textColor = status.color
         }
-    }
-    
-    func setupMapViewButton() {
-        mapViewButton = UIButton(type: .system)
-        mapViewButton.setTitle("2D 맵 보기", for: .normal)
-        mapViewButton.backgroundColor = .systemIndigo
-        mapViewButton.setTitleColor(.white, for: .normal)
-        mapViewButton.layer.cornerRadius = 8
-        mapViewButton.addTarget(self, action: #selector(mapViewButtonTapped), for: .touchUpInside)
-        
-        // 상단 오른쪽에 배치
-        let buttonSize: CGFloat = 100
-        let padding: CGFloat = 16
-        mapViewButton.frame = CGRect(
-            x: view.bounds.width - buttonSize - padding,
-            y: 0,
-            width: buttonSize,
-            height: 50
-        )
-        
-        view.addSubview(mapViewButton)
     }
     
     @objc func setOriginButtonTapped() {
@@ -173,5 +171,58 @@ class ARViewController: UIViewController {
             guard let self = self else { return }
             self.positionLabel.text = formattedText
         }
+    }
+    
+    // MARK: - 초기 방향 설정
+    private func setInitialDirection() {
+        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
+        let cameraTransform = currentFrame.camera.transform
+        let yaw = atan2(cameraTransform.columns.0.z, cameraTransform.columns.2.z)
+        
+        initialYaw = yaw
+        isInitialYawSet = true
+        print("🧭 초기 방향 설정: \(yaw) 라디안")
+    }
+    
+    // MARK: - 미니맵 업데이트
+    private func updateMiniMapDirection() {
+        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
+        
+        // 카메라의 회전 정보 가져오기
+        let cameraTransform = currentFrame.camera.transform
+        let currentYaw = atan2(cameraTransform.columns.0.z, cameraTransform.columns.2.z)
+        
+        // 초기 방향 대비 상대 각도 계산
+        let relativeYaw = currentYaw - initialYaw
+        
+        print("🧭 방향 정보:")
+        print("  - 초기 Yaw: \(initialYaw)")
+        print("  - 현재 Yaw: \(currentYaw)")
+        print("  - 상대 각도: \(relativeYaw)")
+        
+        // 미니맵에 방향 업데이트 (상대 각도 사용)
+        miniMapView.updateDirection(angle: CGFloat(relativeYaw))
+        
+        // 미니맵에 객체들 업데이트
+        updateMiniMapObjects()
+    }
+    
+    // MARK: - 미니맵 객체 업데이트
+    private func updateMiniMapObjects() {
+        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
+        
+        // 현재 카메라 위치 (내 위치)
+        let cameraTransform = currentFrame.camera.transform
+        let playerPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+        
+        // 객체 위치들 가져오기
+        let objectPositions = arModelManager.getObjectPositions()
+        
+        print("🎯 미니맵 객체 업데이트:")
+        print("  - 내 위치: \(playerPosition)")
+        print("  - 객체 개수: \(objectPositions.count)")
+        
+        // 미니맵에 객체들 업데이트
+        miniMapView.updateObjects(objectPositions: objectPositions, playerPosition: playerPosition)
     }
 }

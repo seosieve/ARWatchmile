@@ -11,13 +11,15 @@ import RealityKit
 
 class ARModelManager {
     func addModelToAnchor(_ anchor: ARAnchor, view: ARView) {
-        let boxMesh = MeshResource.generateBox(size: 0.3)
-        let boxMaterial = SimpleMaterial(color: .red, isMetallic: false)
-        let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-        
-        let anchorEntity = AnchorEntity(anchor: anchor)
-        anchorEntity.addChild(boxEntity)
-        
-        view.scene.addAnchor(anchorEntity)
+        DispatchQueue.main.async {
+            let boxMesh = MeshResource.generateBox(size: 0.3)
+            let boxMaterial = SimpleMaterial(color: .red, isMetallic: false)
+            let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
+            
+            let anchorEntity = AnchorEntity(anchor: anchor)
+            anchorEntity.addChild(boxEntity)
+            
+            view.scene.addAnchor(anchorEntity)
+        }
     }
 }

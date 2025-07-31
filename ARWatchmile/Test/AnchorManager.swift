@@ -12,6 +12,7 @@ import RealityKit
 class AnchorManager: NSObject {
     var arView: ARView!
     private let storageManager = AnchorStorageManager()
+    private var visualizationManager: SimpleARViewVisualization?
     
     override init() {
         super.init()
@@ -27,6 +28,21 @@ class AnchorManager: NSObject {
         arView.session.delegate = self
         arView.session.run(config)
         arView.debugOptions = [.showSceneUnderstanding]
+        
+        // ARView용 시각화 매니저 초기화
+        visualizationManager = SimpleARViewVisualization(arView: arView)
+    }
+    
+    // MARK: - 시각화 메서드들
+    func visualizeSavedAnchors() {
+        let savedAnchors = storageManager.getAllSavedAnchors()
+        print("🎯 시각화 시작 - 앵커 개수: \(savedAnchors.count)")
+        visualizationManager?.visualizeAnchors(savedAnchors)
+    }
+    
+    func clearVisualizations() {
+        visualizationManager?.clearAllVisualizations()
+        print("🗑️ 시각화 제거 완료")
     }
 }
 
@@ -45,7 +61,12 @@ extension AnchorManager {
         // 저장 매니저에 저장
         storageManager.saveAnchor(anchor, name: name)
         
+        // 즉시 시각화 업데이트
+        visualizeSavedAnchors()
+        
         print("📍 수동 앵커 추가됨: \(name ?? "unnamed")")
+        print("  - 위치: \(position)")
+        print("  - 총 앵커 개수: \(getAnchorCount())")
     }
     
     // 저장된 앵커들 가져오기
@@ -61,11 +82,16 @@ extension AnchorManager {
     // 모든 앵커 삭제
     func clearAllAnchors() {
         storageManager.clearAllAnchors()
+        clearVisualizations()
+        print("🗑️ 모든 앵커 삭제 완료")
     }
     
     // 저장된 앵커들 로드
     func loadSavedAnchors() {
         storageManager.loadAnchorsFromFile()
+        // 로드 후 시각화
+        visualizeSavedAnchors()
+        print("📂 저장된 앵커 로드 완료")
     }
 }
 

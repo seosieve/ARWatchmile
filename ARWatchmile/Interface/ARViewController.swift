@@ -19,28 +19,37 @@ class ARViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        arSessionManager = ARSessionManager()
-        arSessionManager.arView = ARView(frame: view.bounds)
-        arModelManager = ARModelManager()
-        view.addSubview(arSessionManager.arView)
-        setupButtons()
-        setupPositionLabel()
-        setupStatusLabel()
-        setObjectLabel()
-        setupMapViewButton()
-        arSessionManager.startARSession()
-        // 카메라 위치 업데이트 콜백 연결
-        arSessionManager.onCameraPositionUpdate = { [weak self] position in
-            self?.updatePositionLabel(position: position)
-        }
-        // 트래킹 상태 업데이트 콜백 연결
-        arSessionManager.onTrackingStatusUpdate = { [weak self] status in
-            self?.updateStatusLabel(status: status)
-        }
-        // 상태 체크 타이머 추가 (1초마다)
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float]
-            self?.arSessionManager.checkTrackingStatus(originArray: originArray)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.arSessionManager = ARSessionManager()
+            self.arSessionManager.arView = ARView(frame: self.view.bounds)
+            self.arModelManager = ARModelManager()
+            self.view.addSubview(self.arSessionManager.arView)
+            self.setupButtons()
+            self.setupPositionLabel()
+            self.setupStatusLabel()
+            self.setObjectLabel()
+            self.setupMapViewButton()
+            self.arSessionManager.startARSession()
+            
+            // 카메라 위치 업데이트 콜백 연결
+            self.arSessionManager.onCameraPositionUpdate = { [weak self] position in
+                self?.updatePositionLabel(position: position)
+            }
+            
+            // 트래킹 상태 업데이트 콜백 연결
+            self.arSessionManager.onTrackingStatusUpdate = { [weak self] status in
+                self?.updateStatusLabel(status: status)
+            }
+            
+            // 상태 체크 타이머 추가 (1초마다)
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                guard let self = self else { return }
+                let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float]
+                self.arSessionManager.checkTrackingStatus(originArray: originArray)
+            }
         }
     }
     
@@ -105,7 +114,8 @@ class ARViewController: UIViewController {
     }
     
     func updateStatusLabel(status: TrackingStatus) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.statusLabel.text = status.description
             self.statusLabel.textColor = status.color
         }
@@ -121,15 +131,6 @@ class ARViewController: UIViewController {
         setOriginButton.addTarget(self, action: #selector(setOriginButtonTapped), for: .touchUpInside)
         setOriginButton.frame = CGRect(x: 20, y: 50, width: 100, height: 50)
         view.addSubview(setOriginButton)
-        
-        let saveWorldMapButton = UIButton(type: .system)
-        saveWorldMapButton.setTitle("월드맵 저장", for: .normal)
-        saveWorldMapButton.backgroundColor = .systemGreen
-        saveWorldMapButton.setTitleColor(.white, for: .normal)
-        saveWorldMapButton.layer.cornerRadius = 8
-        saveWorldMapButton.addTarget(self, action: #selector(saveWorldMapButtonTapped), for: .touchUpInside)
-        saveWorldMapButton.frame = CGRect(x: 20, y: 120, width: 120, height: 50)
-        view.addSubview(saveWorldMapButton)
     }
     
     func setupPositionLabel() {
@@ -180,7 +181,6 @@ class ARViewController: UIViewController {
         let transform = currentFrame.camera.transform
         let position = SIMD3<Float>(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
         UserDefaults.standard.set([position.x, position.z], forKey: "permanent_origin")
-        // UI 피드백 등만 처리
     }
     
     @objc func mapViewButtonTapped() {
@@ -197,15 +197,10 @@ class ARViewController: UIViewController {
         present(mapVC, animated: true)
     }
     
-    @objc func saveWorldMapButtonTapped() {
-        arSessionManager.saveWorldMap()
-        // UI 피드백(예: 저장 완료 토스트 등) 추가 가능
-        print("🟩 월드맵 수동 저장")
-    }
-    
     func updatePositionLabel(position: SIMD3<Float>?) {
         if !arSessionManager.isMapMatched {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.positionLabel.text = "위치 매칭 중..."
             }
             return
@@ -214,7 +209,8 @@ class ARViewController: UIViewController {
         guard let position = position,
               let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
               originArray.count == 2 else {
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.positionLabel.text = "원점이 설정되지 않음"
             }
             return
@@ -230,7 +226,8 @@ class ARViewController: UIViewController {
         // 소수점 한 자리까지 표시
         let formattedText = String(format: "(%.1f, %.1f, %.1f)", relativeX, position.y, relativeZ)
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.positionLabel.text = formattedText
         }
     }

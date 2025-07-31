@@ -30,5 +30,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        // 앱이 완전히 종료될 때 WorldMap 저장
+        saveWorldMapOnTermination()
+    }
+    
+    private func saveWorldMapOnTermination() {
+        // 메인 스레드에서 안전하게 실행
+        DispatchQueue.main.async {
+            // SceneDelegate를 통해 WorldMap 저장
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootViewController = window.rootViewController as? ARViewController {
+                rootViewController.arSessionManager.saveWorldMap()
+                print("🔄 앱 종료 시 WorldMap 저장 완료 (AppDelegate)")
+            }
+        }
+    }
 }
 

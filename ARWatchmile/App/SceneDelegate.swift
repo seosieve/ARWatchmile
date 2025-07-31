@@ -17,18 +17,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //상수 사용을 위해 이름을 넣습니다.
         let viewController = UIWindow(windowScene: windowScene)
         //최초 진입 뷰 컨트롤러를 지정합니다.
-        viewController.rootViewController = AnchorViewController()
+        viewController.rootViewController = ARViewController()
         //창을 활성화하고 표시합니다.
         viewController.makeKeyAndVisible()
         //self.window에 생성한 윈도우를 지정합니다.
         self.window = viewController
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -50,6 +43,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+        
+        // 앱이 백그라운드로 갈 때 WorldMap 저장
+        saveWorldMapOnBackground()
+    }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {
+        // Called as the scene is being released by the system.
+        // This occurs shortly after the scene enters the background, or when its session is discarded.
+        // Release any resources associated with this scene that can be re-created the next time the scene connects.
+        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+        
+        // 앱이 완전히 종료될 때 WorldMap 저장
+        saveWorldMapOnBackground()
+    }
+    
+    private func saveWorldMapOnBackground() {
+        // 메인 스레드에서 안전하게 실행
+        DispatchQueue.main.async {
+            // 현재 활성화된 ARViewController 찾기
+            if let window = self.window,
+               let rootViewController = window.rootViewController as? ARViewController {
+                rootViewController.arSessionManager.saveWorldMap()
+                print("🔄 앱 종료 시 WorldMap 저장 완료")
+            }
+        }
     }
 }
 

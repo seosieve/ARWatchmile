@@ -52,6 +52,9 @@ class MiniMapView: UIView {
     // 빨간 네모들을 나타내는 뷰들
     private var objectViews: [UIView] = []
     
+    // 방향 조절을 위한 각도 오프셋 (라디안 단위, 85도)
+    private var directionOffset: CGFloat = 60 * .pi / 180
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -89,10 +92,27 @@ class MiniMapView: UIView {
         }
     }
     
-    // MARK: - 방향 업데이트
+    // MARK: - 방향 업데이트 (절대 방향 + 오프셋)
     func updateDirection(angle: CGFloat) {
-        // 부채꼴 회전
-        directionCone.transform = CGAffineTransform(rotationAngle: angle)
+        // 절대 방향 + 조절 가능한 오프셋
+        let adjustedAngle = angle + directionOffset
+        directionCone.transform = CGAffineTransform(rotationAngle: adjustedAngle)
+        
+        // 라디안을 도로 변환해서 로그 출력
+        let angleDegrees = angle * 180 / .pi
+        let offsetDegrees = directionOffset * 180 / .pi
+        let adjustedDegrees = adjustedAngle * 180 / .pi
+        
+        print("🧭 미니맵 방향 업데이트:")
+        print("  - 원본 각도: \(angle) 라디안 (\(angleDegrees)°)")
+        print("  - 오프셋: \(directionOffset) 라디안 (\(offsetDegrees)°)")
+        print("  - 조정된 각도: \(adjustedAngle) 라디안 (\(adjustedDegrees)°)")
+    }
+    
+    // MARK: - 방향 오프셋 조절 (디버그용)
+    func adjustDirectionOffset(offset: CGFloat) {
+        directionOffset = offset
+        print("🧭 방향 오프셋 조절: \(offset)")
     }
     
     // MARK: - 빨간 네모들 업데이트
@@ -129,13 +149,19 @@ class MiniMapView: UIView {
             
             // 미니맵 경계 내에 있는지 확인
             let maxOffset: CGFloat = 70 // 미니맵 반지름보다 작게
-            let clampedX = max(-maxOffset, min(maxOffset, mapX))
-            let clampedY = max(-maxOffset, min(maxOffset, mapY))
             
-            objectView.snp.makeConstraints { make in
-                make.centerX.equalToSuperview().offset(clampedX)
-                make.centerY.equalToSuperview().offset(clampedY)
-                make.width.height.equalTo(6) // 크기도 증가
+            // 경계 밖에 있으면 숨기기
+            if abs(mapX) > maxOffset || abs(mapY) > maxOffset {
+                objectView.isHidden = true
+                print("  - 객체 \(index + 1): 경계 밖으로 숨김 (위치: \(mapX), \(mapY))")
+            } else {
+                objectView.isHidden = false
+                objectView.snp.makeConstraints { make in
+                    make.centerX.equalToSuperview().offset(mapX)
+                    make.centerY.equalToSuperview().offset(mapY)
+                    make.width.height.equalTo(6)
+                }
+                print("  - 객체 \(index + 1): 경계 내 표시 (위치: \(mapX), \(mapY))")
             }
         }
         

@@ -19,5 +19,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>나침반 기능을 위해 위치 정보가 필요합니다.</string>
 </dict>
 </plist>

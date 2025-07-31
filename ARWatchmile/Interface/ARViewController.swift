@@ -8,14 +8,14 @@
 import UIKit
 import ARKit
 import RealityKit
+import CoreLocation
 
-class ARViewController: UIViewController {
+class ARViewController: UIViewController, CLLocationManagerDelegate {
     var arSessionManager: ARSessionManager!
     var arModelManager: ARModelManager!
     
-    // AR 세션 시작 시점의 초기 방향 저장
-    private var initialYaw: Float = 0.0
-    private var isInitialYawSet = false
+    // 나침반을 위한 Location Manager
+    private var locationManager = CLLocationManager()
     
     private var statusLabel = UILabel().then {
         $0.textAlignment = .center
@@ -41,6 +41,9 @@ class ARViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // 나침반 설정
+        setupCompass()
+        
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
@@ -62,15 +65,7 @@ class ARViewController: UIViewController {
                 self?.updateMiniMapDirection()
             }
             
-            // 초기 방향 설정을 위한 타이머 (첫 번째 프레임에서 초기 방향 저장)
-            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-                guard let self = self else { return }
-                if !self.isInitialYawSet {
-                    self.setInitialDirection()
-                }
-            }
-            
-            // 트래킹 상태 업데이트 콜백 연결
+            // 트래킹 상태 업데이트 콜백
             self.arSessionManager.onTrackingStatusUpdate = { [weak self] status in
                 self?.updateStatusLabel(status: status)
             }
@@ -173,37 +168,36 @@ class ARViewController: UIViewController {
         }
     }
     
-    // MARK: - 초기 방향 설정
-    private func setInitialDirection() {
-        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
-        let cameraTransform = currentFrame.camera.transform
-        let yaw = atan2(cameraTransform.columns.0.z, cameraTransform.columns.2.z)
+    // MARK: - 나침반 설정
+    private func setupCompass() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
-        initialYaw = yaw
-        isInitialYawSet = true
-        print("🧭 초기 방향 설정: \(yaw) 라디안")
+        // 나침반 권한 요청
+        if CLLocationManager.headingAvailable() {
+            locationManager.startUpdatingHeading()
+            print("🧭 나침반 시작됨")
+        } else {
+            print("❌ 나침반을 사용할 수 없습니다")
+        }
     }
     
-    // MARK: - 미니맵 업데이트
+    // MARK: - CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        // 나침반 방향 업데이트
+        let trueHeading = newHeading.trueHeading // 실제 북쪽 기준
+        let headingRadians = CGFloat(trueHeading * .pi / 180)
+        
+        print("🧭 나침반 방향: \(trueHeading)°")
+        
+        // 미니맵에 나침반 방향 업데이트
+        miniMapView.updateDirection(angle: headingRadians)
+    }
+    
+    // MARK: - 미니맵 업데이트 (나침반 방향)
     private func updateMiniMapDirection() {
-        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
-        
-        // 카메라의 회전 정보 가져오기
-        let cameraTransform = currentFrame.camera.transform
-        let currentYaw = atan2(cameraTransform.columns.0.z, cameraTransform.columns.2.z)
-        
-        // 초기 방향 대비 상대 각도 계산
-        let relativeYaw = currentYaw - initialYaw
-        
-        print("🧭 방향 정보:")
-        print("  - 초기 Yaw: \(initialYaw)")
-        print("  - 현재 Yaw: \(currentYaw)")
-        print("  - 상대 각도: \(relativeYaw)")
-        
-        // 미니맵에 방향 업데이트 (상대 각도 사용)
-        miniMapView.updateDirection(angle: CGFloat(relativeYaw))
-        
-        // 미니맵에 객체들 업데이트
+        // 나침반 방향은 locationManager에서 자동으로 업데이트됨
+        // 여기서는 객체들만 업데이트
         updateMiniMapObjects()
     }
     

@@ -52,8 +52,20 @@ class MiniMapView: UIView {
     // 빨간 네모들을 나타내는 뷰들
     private var objectViews: [UIView] = []
     
+    // OfficeMap 이미지 뷰
+    private var officeMapImageView = UIImageView().then {
+        $0.image = UIImage(named: "OfficeMap")
+        $0.contentMode = .scaleAspectFit
+        $0.alpha = 0.7 // 약간 투명하게
+    }
+    
     // 방향 조절을 위한 각도 오프셋 (라디안 단위, 85도)
     private var directionOffset: CGFloat = 60 * .pi / 180
+    
+    // 처음 시작점 조정 변수들
+    private var initialMapOffsetX: CGFloat = 0.0 // 지도 초기 X 오프셋
+    private var initialMapOffsetY: CGFloat = 0.0 // 지도 초기 Y 오프셋
+    private var initialRotationAngle: CGFloat = 0.0 // 지도 초기 회전 각도 (라디안)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,12 +80,19 @@ class MiniMapView: UIView {
     private func setupUI() {
         backgroundColor = UIColor.black.withAlphaComponent(0.5)
         layer.cornerRadius = 8
-        layer.masksToBounds = true
+        layer.masksToBounds = true // overflow hidden
         
         // 크기 제약 설정
         snp.makeConstraints { make in
             make.width.equalTo(160)
             make.height.equalTo(160)
+        }
+        
+        // OfficeMap 이미지 추가 (맨 뒤에)
+        addSubview(officeMapImageView)
+        officeMapImageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalTo(200) // 미니맵보다 크게
         }
         
         // 방향 부채꼴 추가
@@ -115,6 +134,17 @@ class MiniMapView: UIView {
         print("🧭 방향 오프셋 조절: \(offset)")
     }
     
+    // MARK: - 지도 초기 위치 설정
+    func setInitialMapPosition(offsetX: CGFloat, offsetY: CGFloat, rotationAngle: CGFloat) {
+        initialMapOffsetX = offsetX
+        initialMapOffsetY = offsetY
+        initialRotationAngle = rotationAngle
+        print("🗺️ 지도 초기 위치 설정:")
+        print("  - X 오프셋: \(offsetX)")
+        print("  - Y 오프셋: \(offsetY)")
+        print("  - 회전 각도: \(rotationAngle * 180 / .pi)°")
+    }
+    
     // MARK: - 빨간 네모들 업데이트
     func updateObjects(objectPositions: [SIMD3<Float>], playerPosition: SIMD3<Float>) {
         // 기존 객체 뷰들 제거
@@ -124,6 +154,10 @@ class MiniMapView: UIView {
         print("🎯 미니맵 업데이트:")
         print("  - 내 위치: \(playerPosition)")
         print("  - 객체 개수: \(objectPositions.count)")
+        
+        // OfficeMap 위치 업데이트 (플레이어 위치에 따라)
+        print("🗺️ OfficeMap 업데이트 시작")
+        updateOfficeMapPosition(playerPosition: playerPosition)
         
         // 새로운 객체 뷰들 생성
         for (index, position) in objectPositions.enumerated() {
@@ -166,6 +200,35 @@ class MiniMapView: UIView {
         }
         
         print("🎯 미니맵에 \(objectPositions.count)개 객체 표시됨")
+    }
+    
+    // MARK: - OfficeMap 위치 업데이트
+    private func updateOfficeMapPosition(playerPosition: SIMD3<Float>) {
+        // updateObjects와 같은 방식으로 계산
+        // 플레이어 위치를 기준으로 맵이 반대 방향으로 움직이도록
+        let mapOffsetX = CGFloat(-playerPosition.x * 10.0) + initialMapOffsetX // 초기 오프셋 추가
+        let mapOffsetY = CGFloat(-playerPosition.z * 10.0) + initialMapOffsetY
+        
+        // 이동과 회전을 결합한 transform
+        let translationTransform = CGAffineTransform(translationX: mapOffsetX, y: mapOffsetY)
+        let rotationTransform = CGAffineTransform(rotationAngle: initialRotationAngle)
+        let combinedTransform = translationTransform.concatenating(rotationTransform)
+        
+        officeMapImageView.transform = combinedTransform
+        
+        print("🗺️ OfficeMap 위치 업데이트:")
+        print("  - 플레이어 위치: \(playerPosition)")
+        print("  - 맵 오프셋: (\(mapOffsetX), \(mapOffsetY))")
+        print("  - 초기 오프셋: (\(initialMapOffsetX), \(initialMapOffsetY))")
+        print("  - 초기 회전: \(initialRotationAngle * 180 / .pi)°")
+        print("  - transform 적용됨")
+        
+        // 테스트용: 강제로 움직임 확인
+        if abs(mapOffsetX) > 0 || abs(mapOffsetY) > 0 {
+            print("🎯 지도가 움직여야 함! 오프셋이 0이 아님")
+        } else {
+            print("⚠️ 오프셋이 0이라서 움직이지 않음")
+        }
     }
 }
 

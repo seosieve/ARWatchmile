@@ -101,6 +101,7 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
             make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.right.equalToSuperview().offset(-20)
         }
+        miniMapView.setInitialMapPosition(offsetX: -250, offsetY: -120, rotationAngle: 80)
     }
     
     func updateStatusLabel(status: TrackingStatus) {

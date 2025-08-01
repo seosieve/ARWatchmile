@@ -10,26 +10,20 @@ import ARKit
 import RealityKit
 
 class ARModelManager {
+    // MARK: - 메쉬 모델 정의
     func addModelToAnchor(_ anchor: ARAnchor, view: ARView) {
-        DispatchQueue.main.async {
-            let boxMesh = MeshResource.generateBox(size: 0.3)
-            let boxMaterial = SimpleMaterial(color: .red, isMetallic: false)
-            let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
-            
-            let anchorEntity = AnchorEntity(anchor: anchor)
-            anchorEntity.addChild(boxEntity)
-            
-            view.scene.addAnchor(anchorEntity)
-        }
+        let boxMesh = MeshResource.generateBox(size: 0.3)
+        let boxMaterial = SimpleMaterial(color: .red, isMetallic: false)
+        let boxEntity = ModelEntity(mesh: boxMesh, materials: [boxMaterial])
+        
+        let anchorEntity = AnchorEntity(anchor: anchor)
+        anchorEntity.addChild(boxEntity)
+        
+        view.scene.addAnchor(anchorEntity)
     }
     
     func placeMultipleObjects(arView: ARView) {
-        let positions = [
-            (x: Float(0), z: Float(0)),
-            (x: Float(6.7), z: Float(6.0)),
-            (x: Float(5.1), z: Float(-5.1)),
-            (x: Float(11.7), z: Float(0.8)),
-        ]
+        let positions = MeshPosition.testBox
         
         for position in positions {
             placeObjectAtCoordinates(x: position.x, z: position.z, arView: arView)
@@ -46,12 +40,7 @@ class ARModelManager {
         }
         
         let originPoint = SIMD3<Float>(originData[0], 0, originData[1])
-        let positions = [
-            (x: Float(0), z: Float(0)),
-            (x: Float(6.7), z: Float(6.0)),
-            (x: Float(5.1), z: Float(-5.1)),
-            (x: Float(11.7), z: Float(0.8)),
-        ]
+        let positions = MeshPosition.testBox
         
         return positions.map { position in
             originPoint + SIMD3<Float>(position.x, 0, position.z)

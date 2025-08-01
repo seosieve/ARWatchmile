@@ -214,8 +214,6 @@ class MiniMapView: UIView {
             }
             print("  - 객체 \(index + 1): OfficeMap 기준 위치(\(officeMapPoint.x), \(officeMapPoint.y))")
         }
-        
-        print("🎯 미니맵에 \(objectPositions.count)개 객체 표시됨 (OfficeMap 좌표 매핑)")
     }
     
     // MARK: - 아핀변환 계산 함수

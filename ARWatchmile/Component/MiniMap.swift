@@ -38,7 +38,6 @@ class DirectionIndicatorView: UIView {
 }
 
 class MiniMapView: UIView {
-    
     // 내 위치를 나타내는 노란 점
     private var playerDot = UIView().then {
         $0.backgroundColor = .yellow
@@ -82,17 +81,12 @@ class MiniMapView: UIView {
         layer.cornerRadius = 8
         layer.masksToBounds = true // overflow hidden
         
-        // 크기 제약 설정
-        snp.makeConstraints { make in
-            make.width.equalTo(160)
-            make.height.equalTo(160)
-        }
-        
         // OfficeMap 이미지 추가 (맨 뒤에)
         addSubview(officeMapImageView)
         officeMapImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.equalTo(200) // 미니맵보다 크게
+            make.width.equalTo(365)
+            make.height.equalTo(100)
         }
         
         // 방향 부채꼴 추가
@@ -128,38 +122,75 @@ class MiniMapView: UIView {
         print("  - 조정된 각도: \(adjustedAngle) 라디안 (\(adjustedDegrees)°)")
     }
     
-    // MARK: - 방향 오프셋 조절 (디버그용)
-    func adjustDirectionOffset(offset: CGFloat) {
-        directionOffset = offset
-        print("🧭 방향 오프셋 조절: \(offset)")
-    }
-    
-    // MARK: - 지도 초기 위치 설정
-    func setInitialMapPosition(offsetX: CGFloat, offsetY: CGFloat, rotationAngle: CGFloat) {
-        initialMapOffsetX = offsetX
-        initialMapOffsetY = offsetY
-        initialRotationAngle = rotationAngle
-        print("🗺️ 지도 초기 위치 설정:")
-        print("  - X 오프셋: \(offsetX)")
-        print("  - Y 오프셋: \(offsetY)")
-        print("  - 회전 각도: \(rotationAngle * 180 / .pi)°")
-    }
-    
-    // MARK: - 빨간 네모들 업데이트
-    func updateObjects(objectPositions: [SIMD3<Float>], playerPosition: SIMD3<Float>) {
+    // MARK: - 빨간 네모들과 내 위치 업데이트 (OfficeMap 좌표에 매핑)
+    func updateObjects(objectPositions: [SIMD3<Float>], playerPosition: SIMD3<Float>, relativePosition: CGPoint) {
         // 기존 객체 뷰들 제거
         objectViews.forEach { $0.removeFromSuperview() }
         objectViews.removeAll()
         
         print("🎯 미니맵 업데이트:")
         print("  - 내 위치: \(playerPosition)")
+        print("  - 상대 위치: \(relativePosition)")
         print("  - 객체 개수: \(objectPositions.count)")
         
-        // OfficeMap 위치 업데이트 (플레이어 위치에 따라)
-        print("🗺️ OfficeMap 업데이트 시작")
-        updateOfficeMapPosition(playerPosition: playerPosition)
+        // 실제 위치 → OfficeMap 좌표 변환식 찾기
+        // 빨간점들의 실제 위치와 OfficeMap 좌표 매핑
+        let actualPositions = [
+            (x: 0.0, z: 0.0),      // 실제 위치
+            (x: 6.7, z: 6.0),      // 실제 위치
+            (x: 5.1, z: -5.1),     // 실제 위치
+            (x: 11.7, z: 0.8)      // 실제 위치
+        ]
         
-        // 새로운 객체 뷰들 생성
+        let officeMapCoordinates = [
+            CGPoint(x: 0, y: 0),    // OfficeMap 좌표
+            CGPoint(x: 0, y: 100),  // OfficeMap 좌표
+            CGPoint(x: 80, y: 0),   // OfficeMap 좌표
+            CGPoint(x: 80, y: 100)  // OfficeMap 좌표
+        ]
+        
+        // 아핀변환을 사용한 정확한 매핑
+        let playerActualX = relativePosition.x
+        let playerActualZ = relativePosition.y
+        
+        // 아핀변환 행렬 계산 (4개 점 매핑)
+        let sourcePoints = [
+            CGPoint(x: actualPositions[0].x, y: actualPositions[0].z),  // (0, 0)
+            CGPoint(x: actualPositions[1].x, y: actualPositions[1].z),  // (6.7, 6.0)
+            CGPoint(x: actualPositions[2].x, y: actualPositions[2].z),  // (5.1, -5.1)
+            CGPoint(x: actualPositions[3].x, y: actualPositions[3].z)   // (11.7, 0.8)
+        ]
+        
+        let targetPoints = [
+            CGPoint(x: officeMapCoordinates[0].x, y: officeMapCoordinates[0].y),  // (0, 0)
+            CGPoint(x: officeMapCoordinates[1].x, y: officeMapCoordinates[1].y),  // (0, 100)
+            CGPoint(x: officeMapCoordinates[2].x, y: officeMapCoordinates[2].y),  // (80, 0)
+            CGPoint(x: officeMapCoordinates[3].x, y: officeMapCoordinates[3].y)   // (80, 100)
+        ]
+        
+        // 아핀변환 행렬 계산
+        let transform = calculateAffineTransform(from: sourcePoints, to: targetPoints)
+        
+        // 플레이어 위치를 OfficeMap 좌표로 변환
+        let playerPoint = CGPoint(x: playerActualX, y: playerActualZ)
+        let transformedPoint = playerPoint.applying(transform)
+        
+        let playerOfficeMapX = transformedPoint.x
+        let playerOfficeMapY = transformedPoint.y
+        
+        print("  - 아핀변환 적용: (\(playerActualX), \(playerActualZ)) → (\(playerOfficeMapX), \(playerOfficeMapY))")
+        
+        print("  - 내 위치: 상대(\(relativePosition.x), \(relativePosition.y)) → OfficeMap(\(playerOfficeMapX), \(playerOfficeMapY))")
+        print("  - 노란점 최종 위치: (\(playerOfficeMapX - 182.5), \(playerOfficeMapY - 50))")
+        
+        // 내 위치 점 업데이트 (OfficeMap 기준으로 통일)
+        playerDot.snp.remakeConstraints { make in
+            make.centerX.equalTo(officeMapImageView).offset(playerOfficeMapX - 182.5) // OfficeMap 중앙 기준
+            make.centerY.equalTo(officeMapImageView).offset(playerOfficeMapY - 50) // OfficeMap 중앙 기준
+            make.width.height.equalTo(8)
+        }
+        
+        // 새로운 객체 뷰들 생성 (고정 위치)
         for (index, position) in objectPositions.enumerated() {
             let objectView = UIView().then {
                 $0.backgroundColor = .red
@@ -170,65 +201,45 @@ class MiniMapView: UIView {
             addSubview(objectView)
             objectViews.append(objectView)
             
-            // 내 위치 기준으로 상대 위치 계산
-            let relativeX = position.x - playerPosition.x
-            let relativeZ = position.z - playerPosition.z
+            // OfficeMap 좌표로 고정 위치 설정
+            let officeMapPoint = officeMapCoordinates[index]
             
-            // 미니맵 스케일 (실제 거리를 미니맵 크기에 맞게 조정)
-            let scale: Float = 10 // 더 큰 스케일로 조정
-            let mapX = CGFloat(relativeX * scale)
-            let mapY = CGFloat(relativeZ * scale)
+            print("  - 객체 \(index + 1): 실제위치(\(position.x), \(position.z)) → OfficeMap위치(\(officeMapPoint.x), \(officeMapPoint.y))")
             
-            print("  - 객체 \(index + 1): 상대위치(\(relativeX), \(relativeZ)) -> 미니맵위치(\(mapX), \(mapY))")
-            
-            // 미니맵 경계 내에 있는지 확인
-            let maxOffset: CGFloat = 70 // 미니맵 반지름보다 작게
-            
-            // 경계 밖에 있으면 숨기기
-            if abs(mapX) > maxOffset || abs(mapY) > maxOffset {
-                objectView.isHidden = true
-                print("  - 객체 \(index + 1): 경계 밖으로 숨김 (위치: \(mapX), \(mapY))")
-            } else {
-                objectView.isHidden = false
-                objectView.snp.makeConstraints { make in
-                    make.centerX.equalToSuperview().offset(mapX)
-                    make.centerY.equalToSuperview().offset(mapY)
-                    make.width.height.equalTo(6)
-                }
-                print("  - 객체 \(index + 1): 경계 내 표시 (위치: \(mapX), \(mapY))")
+            // OfficeMap 이미지뷰 기준 좌표로 설정
+            objectView.snp.makeConstraints { make in
+                make.centerX.equalTo(officeMapImageView).offset(officeMapPoint.x - 182.5) // OfficeMap 중앙 기준
+                make.centerY.equalTo(officeMapImageView).offset(officeMapPoint.y - 50) // OfficeMap 중앙 기준
+                make.width.height.equalTo(6)
             }
+            print("  - 객체 \(index + 1): OfficeMap 기준 위치(\(officeMapPoint.x), \(officeMapPoint.y))")
         }
         
-        print("🎯 미니맵에 \(objectPositions.count)개 객체 표시됨")
+        print("🎯 미니맵에 \(objectPositions.count)개 객체 표시됨 (OfficeMap 좌표 매핑)")
     }
     
-    // MARK: - OfficeMap 위치 업데이트
-    private func updateOfficeMapPosition(playerPosition: SIMD3<Float>) {
-        // updateObjects와 같은 방식으로 계산
-        // 플레이어 위치를 기준으로 맵이 반대 방향으로 움직이도록
-        let mapOffsetX = CGFloat(-playerPosition.x * 10.0) + initialMapOffsetX // 초기 오프셋 추가
-        let mapOffsetY = CGFloat(-playerPosition.z * 10.0) + initialMapOffsetY
+    // MARK: - 아핀변환 계산 함수
+    private func calculateAffineTransform(from sourcePoints: [CGPoint], to targetPoints: [CGPoint]) -> CGAffineTransform {
+        // 3개 점을 사용한 아핀변환 계산 (4개 점 중 3개 사용)
+        let p1 = sourcePoints[0]
+        let p2 = sourcePoints[1]
+        let p3 = sourcePoints[2]
         
-        // 이동과 회전을 결합한 transform
-        let translationTransform = CGAffineTransform(translationX: mapOffsetX, y: mapOffsetY)
-        let rotationTransform = CGAffineTransform(rotationAngle: initialRotationAngle)
-        let combinedTransform = translationTransform.concatenating(rotationTransform)
+        let q1 = targetPoints[0]
+        let q2 = targetPoints[1]
+        let q3 = targetPoints[2]
         
-        officeMapImageView.transform = combinedTransform
+        // 아핀변환 행렬 계산
+        let det = p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)
         
-        print("🗺️ OfficeMap 위치 업데이트:")
-        print("  - 플레이어 위치: \(playerPosition)")
-        print("  - 맵 오프셋: (\(mapOffsetX), \(mapOffsetY))")
-        print("  - 초기 오프셋: (\(initialMapOffsetX), \(initialMapOffsetY))")
-        print("  - 초기 회전: \(initialRotationAngle * 180 / .pi)°")
-        print("  - transform 적용됨")
+        let a = (q1.x * (p2.y - p3.y) + q2.x * (p3.y - p1.y) + q3.x * (p1.y - p2.y)) / det
+        let b = (q1.x * (p3.x - p2.x) + q2.x * (p1.x - p3.x) + q3.x * (p2.x - p1.x)) / det
+        let c = (q1.y * (p2.y - p3.y) + q2.y * (p3.y - p1.y) + q3.y * (p1.y - p2.y)) / det
+        let d = (q1.y * (p3.x - p2.x) + q2.y * (p1.x - p3.x) + q3.y * (p2.x - p1.x)) / det
+        let tx = (q1.x * (p2.x * p3.y - p3.x * p2.y) + q2.x * (p3.x * p1.y - p1.x * p3.y) + q3.x * (p1.x * p2.y - p2.x * p1.y)) / det
+        let ty = (q1.y * (p2.x * p3.y - p3.x * p2.y) + q2.y * (p3.x * p1.y - p1.x * p3.y) + q3.y * (p1.x * p2.y - p2.x * p1.y)) / det
         
-        // 테스트용: 강제로 움직임 확인
-        if abs(mapOffsetX) > 0 || abs(mapOffsetY) > 0 {
-            print("🎯 지도가 움직여야 함! 오프셋이 0이 아님")
-        } else {
-            print("⚠️ 오프셋이 0이라서 움직이지 않음")
-        }
+        return CGAffineTransform(a: a, b: b, c: c, d: d, tx: tx, ty: ty)
     }
 }
 

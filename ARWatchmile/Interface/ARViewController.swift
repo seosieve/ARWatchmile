@@ -17,6 +17,13 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
     // 나침반을 위한 Location Manager
     private var locationManager = CLLocationManager()
     
+    private lazy var originLabel = UIButton().then {
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        $0.layer.cornerRadius = 8
+        $0.layer.masksToBounds = true
+        $0.addTarget(self, action: #selector(setOriginButtonTapped), for: .touchUpInside)
+    }
+    
     private var statusLabel = UILabel().then {
         $0.textAlignment = .center
         $0.font = .systemFont(ofSize: 16, weight: .medium)
@@ -96,12 +103,21 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
             make.height.equalTo(32)
         }
         
+//        view.addSubview(originLabel)
+//        originLabel.snp.makeConstraints { make in
+//            make.left.equalToSuperview().offset(20)
+//            make.right.equalToSuperview().offset(-20)
+//            make.bottom.equalTo(statusLabel.snp.top).offset(-8)
+//            make.height.equalTo(32)
+//        }
+        
         view.addSubview(miniMapView)
         miniMapView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.height.equalTo(200)
         }
-        miniMapView.setInitialMapPosition(offsetX: -250, offsetY: -120, rotationAngle: 80)
     }
     
     func updateStatusLabel(status: TrackingStatus) {
@@ -210,14 +226,24 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
         let cameraTransform = currentFrame.camera.transform
         let playerPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
         
+        // 원점으로부터의 상대 위치 계산 (formattedText와 동일한 방식)
+        guard let originArray = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
+              originArray.count == 2 else { return }
+        
+        let originX = originArray[0]
+        let originZ = originArray[1]
+        let relativeX = playerPosition.x - originX
+        let relativeZ = playerPosition.z - originZ
+        
         // 객체 위치들 가져오기
         let objectPositions = arModelManager.getObjectPositions()
         
         print("🎯 미니맵 객체 업데이트:")
         print("  - 내 위치: \(playerPosition)")
+        print("  - 상대 위치: (\(relativeX), \(relativeZ))")
         print("  - 객체 개수: \(objectPositions.count)")
         
-        // 미니맵에 객체들 업데이트
-        miniMapView.updateObjects(objectPositions: objectPositions, playerPosition: playerPosition)
+        // 미니맵에 객체들 업데이트 (상대 위치 전달)
+        miniMapView.updateObjects(objectPositions: objectPositions, playerPosition: playerPosition, relativePosition: CGPoint(x: CGFloat(relativeX), y: CGFloat(relativeZ)))
     }
 }

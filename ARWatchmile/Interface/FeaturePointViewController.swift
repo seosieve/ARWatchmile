@@ -3,7 +3,7 @@ import ARKit
 
 class FeaturePointViewController: UIViewController, UIScrollViewDelegate {
     var featurePoints: [SIMD3<Float>] = []
-    var originPoint: CGPoint?
+    var originPoint: SIMD3<Float>?
     private var scrollView: UIScrollView!
     private var mapView: UIView!
     private var closeButton: UIButton!

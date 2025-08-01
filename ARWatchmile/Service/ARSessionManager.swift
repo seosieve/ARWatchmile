@@ -51,27 +51,21 @@ class ARSessionManager: NSObject, ARSessionDelegate {
         }
     }
     
-    func checkTrackingStatus(originArray: [Float]?) {
-        guard let originArray = originArray, originArray.count == 2 else { return }
+    func checkTrackingStatus(originData: SIMD3<Float>) {
         arView.session.getCurrentWorldMap { [weak self] worldMap, error in
             guard let self = self, let worldMap = worldMap else { return }
+            let pointCount = worldMap.rawFeaturePoints.points.count
+            let quality = min(Float(pointCount) / 100.0, 1.0)
+            let matched = (quality >= 0.5 && self.arView.session.currentFrame?.camera.trackingState == .normal)
             
-            DispatchQueue.main.async {
-                let pointCount = worldMap.rawFeaturePoints.points.count
-                let quality = min(Float(pointCount) / 100.0, 1.0)
-                let matched = (quality >= 0.5 && self.arView.session.currentFrame?.camera.trackingState == .normal)
-                let trackingState = self.arView.session.currentFrame?.camera.trackingState
-                print("quality: \(quality), trackingState: \(String(describing: trackingState))")
+            if matched {
+                self.isMapMatched = true
+                self.onTrackingStatusUpdate?(.matched)
                 
-                if matched {
-                    self.isMapMatched = true
-                    self.onTrackingStatusUpdate?(.matched)
-                    
-                    // 위치 매칭 완료 시 물체 자동 배치
-                    self.placeObjectsWhenMatched()
-                } else {
-                    self.onTrackingStatusUpdate?(.matching(quality))
-                }
+                // 위치 매칭 완료 시 물체 자동 배치
+                self.placeObjectsWhenMatched()
+            } else {
+                self.onTrackingStatusUpdate?(.matching(quality))
             }
         }
     }
@@ -83,8 +77,6 @@ class ARSessionManager: NSObject, ARSessionDelegate {
             arModelManager?.placeMultipleObjects(arView: arView)
             objectsPlacedInSession = true
             print("🎯 위치 매칭 완료! 물체 자동 배치됨")
-        } else {
-            print("🎯 위치 매칭 완료! (이미 이 세션에서 배치됨)")
         }
     }
     

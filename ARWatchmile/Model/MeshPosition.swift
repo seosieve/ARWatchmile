@@ -7,8 +7,11 @@
 
 import Foundation
 
-typealias Position = (x: Float, z: Float)
-
 struct MeshPosition {
-    static let testBox: [Position] = [(x: 0.0, z: 0.0), (x: 6.7, z: 6.0), (x: 5.1, z: -5.1), (x: 11.7, z: 0.8)]
+    static let testBox: [SIMD3<Float>] = [
+        SIMD3<Float>(0.0, 0.0, 0.0),
+        SIMD3<Float>(6.7, 0.0, 6.0),
+        SIMD3<Float>(5.1, 0.0, -5.1),
+        SIMD3<Float>(11.7, 0.0, 0.8)
+    ]
 }

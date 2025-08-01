@@ -10,7 +10,27 @@ import ARKit
 import RealityKit
 
 class ARModelManager {
-    // MARK: - 메쉬 모델 정의
+    // MARK: - 다중 메쉬 모델 배치
+    func placeMultipleObjects(arView: ARView) {
+        let positions: [SIMD3<Float>] = MeshPosition.testBox
+        let _ = positions.map { placeObjectAtCoordinates(position: $0, arView: arView) }
+        
+        print("🎯 \(positions.count)개 물체 배치 완료")
+    }
+    
+    // MARK: - 메쉬 모델 배치
+    func placeObjectAtCoordinates(position: SIMD3<Float>, arView: ARView) {
+        let originData = UserDefaultsManager.shared.getPermanentOrigin()
+        let absolutePosition = originData + position
+        
+        let objectTransform = matrix_float4x4(translation: absolutePosition)
+        let anchor = ARAnchor(transform: objectTransform)
+        
+        arView.session.add(anchor: anchor)
+        self.addModelToAnchor(anchor, view: arView)
+    }
+    
+    // MARK: - 메쉬 모델 생성, Scene 배치
     func addModelToAnchor(_ anchor: ARAnchor, view: ARView) {
         let boxMesh = MeshResource.generateBox(size: 0.3)
         let boxMaterial = SimpleMaterial(color: .red, isMetallic: false)
@@ -22,49 +42,12 @@ class ARModelManager {
         view.scene.addAnchor(anchorEntity)
     }
     
-    func placeMultipleObjects(arView: ARView) {
-        let positions = MeshPosition.testBox
-        
-        for position in positions {
-            placeObjectAtCoordinates(x: position.x, z: position.z, arView: arView)
-        }
-        
-        print("🎯 \(positions.count)개 물체 배치 완료")
-    }
-    
     // MARK: - 객체 위치들 가져오기
     func getObjectPositions() -> [SIMD3<Float>] {
-        guard let originData = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
-              originData.count == 2 else {
-            return []
-        }
-        
-        let originPoint = SIMD3<Float>(originData[0], 0, originData[1])
+        let originData = UserDefaultsManager.shared.getPermanentOrigin()
         let positions = MeshPosition.testBox
         
-        return positions.map { position in
-            originPoint + SIMD3<Float>(position.x, 0, position.z)
-        }
-    }
-    
-    func placeObjectAtCoordinates(x: Float, z: Float, arView: ARView) {
-        guard let originData = UserDefaults.standard.array(forKey: "permanent_origin") as? [Float],
-              originData.count == 2 else {
-            print("❌ 원점을 먼저 설정해주세요")
-            return
-        }
-        
-        let originPoint = SIMD3<Float>(originData[0], 0, originData[1])
-        let absolutePosition = originPoint + SIMD3<Float>(x, 0, z)
-        
-        let objectTransform = matrix_float4x4(translation: absolutePosition)
-        let anchor = ARAnchor(transform: objectTransform)
-        
-        DispatchQueue.main.async {
-            arView.session.add(anchor: anchor)
-            self.addModelToAnchor(anchor, view: arView)
-            print("물체 배치 완료: 원점에서 (\(x), 0, \(z))")
-        }
+        return positions.map { originData + $0 }
     }
 }
 

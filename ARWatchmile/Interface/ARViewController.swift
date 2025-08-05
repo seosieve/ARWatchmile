@@ -64,7 +64,7 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
         // 카메라 위치 업데이트 콜백 연결
         self.arSessionManager.onCameraPositionUpdate = { [weak self] position in
             self?.updatePositionLabel(position: position)
-            self?.updateMiniMapDirection()
+            self?.updateMiniMapPosition(position: position)
         }
         
         // 트래킹 상태 업데이트 콜백
@@ -161,11 +161,7 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
         
         // 소수점 한 자리까지 표시
         let formattedText = String(format: "(%.1f, %.1f, %.1f)", relativeX, position.y, relativeZ)
-        
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.positionLabel.text = formattedText
-        }
+        self.positionLabel.text = formattedText
     }
     
     // MARK: - 나침반 설정
@@ -199,28 +195,23 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
     private func updateMiniMapDirection() {
         // 나침반 방향은 locationManager에서 자동으로 업데이트됨
         // 여기서는 객체들만 업데이트
-        updateMiniMapObjects()
+//        updateMiniMapObjects()
     }
     
     // MARK: - 미니맵 객체 업데이트
-    private func updateMiniMapObjects() {
-        guard let currentFrame = arSessionManager.arView.session.currentFrame else { return }
+    private func updateMiniMapPosition(position: SIMD3<Float>?) {
+        if !arSessionManager.isMapMatched { return }
         
-        // 현재 카메라 위치 (내 위치)
-        let cameraTransform = currentFrame.camera.transform
-        let playerPosition = SIMD3<Float>(cameraTransform.columns.3.x, cameraTransform.columns.3.y, cameraTransform.columns.3.z)
+        guard let position else { return }
         
-        // 원점으로부터의 상대 위치 계산 (formattedText와 동일한 방식)
-//        let originData = UserDefaultsManager.shared.getPermanentOrigin()
+        let originData = UserDefaultsManager.shared.getPermanentOrigin()
         
-//        let relativeX = playerPosition.x - originData.x
-//        let relativeZ = playerPosition.z - originData.z
-//        
-//        // 객체 위치들 가져오기
-//        let objectPositions = arModelManager.getObjectPositions()
+        // 원점으로부터의 상대 위치 계산 (X,Z 평면만)
+        let relativeX = position.x - originData.x
+        let relativeZ = position.z - originData.z
         
-        // 미니맵에 객체들 업데이트
-        
-//        miniMapView.updateObjects(objectPositions: objectPositions, playerPosition: playerPosition, relativePosition: CGPoint(x: CGFloat(relativeX), y: CGFloat(relativeZ)))
+        // 소수점 한 자리까지 표시
+        let playerPosition = SIMD3<Float>(x: relativeX, y: 0, z: relativeZ)
+        miniMapView.updatePlayerPosition(playerPosition: playerPosition)
     }
 }

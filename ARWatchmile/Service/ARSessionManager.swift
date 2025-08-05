@@ -30,6 +30,7 @@ class ARSessionManager: NSObject, ARSessionDelegate {
         
         let config = ARWorldTrackingConfiguration()
         config.isLightEstimationEnabled = true
+        config.sceneReconstruction = .mesh
         config.environmentTexturing = .none
         config.planeDetection = [.horizontal, .vertical]
         isMapMatched = false

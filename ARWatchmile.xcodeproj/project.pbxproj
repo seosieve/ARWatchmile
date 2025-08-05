@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		CF14CBAD2E3B016A00C74F66 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBAC2E3B016A00C74F66 /* SnapKit */; };
 		CF14CBB02E3B018700C74F66 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBAF2E3B018700C74F66 /* Then */; };
+		CF14CBD62E41E4F700C74F66 /* ARCoreAugmentedFaces in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBD52E41E4F700C74F66 /* ARCoreAugmentedFaces */; };
+		CF14CBD82E41E4F700C74F66 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBD72E41E4F700C74F66 /* ARCoreCloudAnchors */; };
+		CF14CBDA2E41E4F700C74F66 /* ARCoreGARSession in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBD92E41E4F700C74F66 /* ARCoreGARSession */; };
+		CF14CBDC2E41E4F700C74F66 /* ARCoreGeospatial in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBDB2E41E4F700C74F66 /* ARCoreGeospatial */; };
+		CF14CBDE2E41E4F700C74F66 /* ARCoreSemantics in Frameworks */ = {isa = PBXBuildFile; productRef = CF14CBDD2E41E4F700C74F66 /* ARCoreSemantics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +75,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF14CBD62E41E4F700C74F66 /* ARCoreAugmentedFaces in Frameworks */,
 				CF14CBAD2E3B016A00C74F66 /* SnapKit in Frameworks */,
+				CF14CBDA2E41E4F700C74F66 /* ARCoreGARSession in Frameworks */,
 				CF14CBB02E3B018700C74F66 /* Then in Frameworks */,
+				CF14CBD82E41E4F700C74F66 /* ARCoreCloudAnchors in Frameworks */,
+				CF14CBDE2E41E4F700C74F66 /* ARCoreSemantics in Frameworks */,
+				CF14CBDC2E41E4F700C74F66 /* ARCoreGeospatial in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,6 +144,11 @@
 			packageProductDependencies = (
 				CF14CBAC2E3B016A00C74F66 /* SnapKit */,
 				CF14CBAF2E3B018700C74F66 /* Then */,
+				CF14CBD52E41E4F700C74F66 /* ARCoreAugmentedFaces */,
+				CF14CBD72E41E4F700C74F66 /* ARCoreCloudAnchors */,
+				CF14CBD92E41E4F700C74F66 /* ARCoreGARSession */,
+				CF14CBDB2E41E4F700C74F66 /* ARCoreGeospatial */,
+				CF14CBDD2E41E4F700C74F66 /* ARCoreSemantics */,
 			);
 			productName = ARWatchmile;
 			productReference = CFEA26832E2F78A200B810F5 /* ARWatchmile.app */;
@@ -220,6 +235,7 @@
 			packageReferences = (
 				CF14CBAB2E3B016A00C74F66 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				CF14CBAE2E3B018700C74F66 /* XCRemoteSwiftPackageReference "Then" */,
+				CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CFEA26842E2F78A200B810F5 /* Products */;
@@ -419,6 +435,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "\"$(inherited)-ObjC\"";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -476,6 +493,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "\"$(inherited)-ObjC\"";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -612,6 +630,14 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google-ar/arcore-ios-sdk";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.50.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -624,6 +650,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CF14CBAE2E3B018700C74F66 /* XCRemoteSwiftPackageReference "Then" */;
 			productName = Then;
+		};
+		CF14CBD52E41E4F700C74F66 /* ARCoreAugmentedFaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreAugmentedFaces;
+		};
+		CF14CBD72E41E4F700C74F66 /* ARCoreCloudAnchors */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreCloudAnchors;
+		};
+		CF14CBD92E41E4F700C74F66 /* ARCoreGARSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreGARSession;
+		};
+		CF14CBDB2E41E4F700C74F66 /* ARCoreGeospatial */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreGeospatial;
+		};
+		CF14CBDD2E41E4F700C74F66 /* ARCoreSemantics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF14CBD42E41E4F700C74F66 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreSemantics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -6,10 +6,29 @@
 //
 
 import UIKit
+import Then
+import SnapKit
+import ARCore
+import ARKit
+import RealityKit
 
 class ARCoreViewController: UIViewController {
+    private let manager = CloudAnchorManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        view.backgroundColor = .white
+        setupUI()
+    }
+    
+    private func setupUI() {
+        
+    }
+}
+
+// MARK: - ARSessionDelegate
+extension ARCoreViewController: ARSessionDelegate {
+    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+        
     }
 }

@@ -26,26 +26,14 @@ final class ARCoreViewController: UIViewController {
     
     private func setupAR() {
         arView.session.delegate = self
-        runSession(trackPlanes: true)
         arCoreManager = ARCoreManager(arView: arView)
         arCoreManager.setupTapGesture()
+        arCoreManager.runSession(trackPlanes: true)
     }
     
     private func setupUI() {
         view.addSubview(arView)
     }
-    
-    private func runSession(trackPlanes: Bool) {
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.worldAlignment = .gravity
-        if trackPlanes { configuration.planeDetection = [.horizontal, .vertical] }
-        arView.session.run(configuration, options: .removeExistingAnchors)
-    }
-}
-
-// MARK: - arViewTap
-extension ARCoreViewController {
-    
 }
 
 // MARK: - ARSessionDelegate
@@ -53,13 +41,20 @@ extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
             if anchor is AREnvironmentProbeAnchor { continue }
+            // Visualize Plane Anchor
             if let planeAnchor = (anchor as? ARPlaneAnchor) {
                 guard let model = ARPlaneManager.createPlaneModel(for: planeAnchor) else { continue }
                 ARPlaneManager.planeModels[planeAnchor.identifier] = model
                 let anchorEntity = AnchorEntity(.anchor(identifier: anchor.identifier))
                 anchorEntity.addChild(model)
                 arView.scene.addAnchor(anchorEntity)
+                continue
             }
+            // Visualize Cloud Anchor
+            guard let model = ARCloudAnchorManager.createCloudAnchorModel() else { continue }
+            let anchorEntity = AnchorEntity(.anchor(identifier: anchor.identifier))
+            anchorEntity.addChild(model)
+            arView.scene.addAnchor(anchorEntity)
         }
     }
     

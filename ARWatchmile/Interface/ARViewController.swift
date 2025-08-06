@@ -182,8 +182,8 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
     // MARK: - CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         // 나침반 방향 업데이트
-        let trueHeading = newHeading.trueHeading // 실제 북쪽 기준
-        let headingRadians = CGFloat(trueHeading * .pi / 180)
+//        let trueHeading = newHeading.trueHeading // 실제 북쪽 기준
+//        let headingRadians = CGFloat(trueHeading * .pi / 180)
         
         //        print("🧭 나침반 방향: \(trueHeading)°")
         

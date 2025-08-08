@@ -30,11 +30,6 @@ class MiniMapView: UIView {
     // 방향 조절을 위한 각도 오프셋 (라디안 단위, 85도)
     private var directionOffset: CGFloat = 60 * .pi / 180
     
-    // 처음 시작점 조정 변수들
-    private var initialMapOffsetX: CGFloat = 0.0 // 지도 초기 X 오프셋
-    private var initialMapOffsetY: CGFloat = 0.0 // 지도 초기 Y 오프셋
-    private var initialRotationAngle: CGFloat = 0.0 // 지도 초기 회전 각도 (라디안)
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -58,14 +53,6 @@ class MiniMapView: UIView {
             make.height.equalTo(100)
         }
         
-        // 방향 부채꼴 추가
-//        addSubview(directionCone)
-//        directionCone.snp.makeConstraints { make in
-//            make.center.equalToSuperview()
-//            make.width.equalTo(32)
-//            make.height.equalTo(32)
-//        }
-        
         // 내 위치 점 추가
         addSubview(playerDot)
         playerDot.snp.makeConstraints { make in
@@ -73,23 +60,6 @@ class MiniMapView: UIView {
             make.width.height.equalTo(8)
         }
     }
-    
-    // MARK: - 방향 업데이트 (절대 방향 + 오프셋)
-//    func updateDirection(angle: CGFloat) {
-//        // 절대 방향 + 조절 가능한 오프셋
-//        let adjustedAngle = angle + directionOffset
-//        directionCone.transform = CGAffineTransform(rotationAngle: adjustedAngle)
-//        
-//        // 라디안을 도로 변환해서 로그 출력
-//        let angleDegrees = angle * 180 / .pi
-//        let offsetDegrees = directionOffset * 180 / .pi
-//        let adjustedDegrees = adjustedAngle * 180 / .pi
-//        
-//        print("🧭 미니맵 방향 업데이트:")
-//        print("  - 원본 각도: \(angle) 라디안 (\(angleDegrees)°)")
-//        print("  - 오프셋: \(directionOffset) 라디안 (\(offsetDegrees)°)")
-//        print("  - 조정된 각도: \(adjustedAngle) 라디안 (\(adjustedDegrees)°)")
-//    }
     
     // MARK: - 빨간 테스트 박스 위치 생성
     func updateTestBoxes() {

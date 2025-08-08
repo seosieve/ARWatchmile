@@ -17,6 +17,8 @@ final class ARCoreViewController: UIViewController {
     
     private lazy var arView = ARView(frame: view.bounds, cameraMode: .ar, automaticallyConfigureSession: false)
     
+    private var miniMapView = MiniMapView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -33,6 +35,14 @@ final class ARCoreViewController: UIViewController {
     
     private func setupUI() {
         view.addSubview(arView)
+        
+        view.addSubview(miniMapView)
+        miniMapView.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            make.height.equalTo(200)
+        }
     }
 }
 

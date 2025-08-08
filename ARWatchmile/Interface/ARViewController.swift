@@ -143,13 +143,13 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func updatePositionLabel(position: SIMD3<Float>?) {
-        if !arSessionManager.isMapMatched {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.positionLabel.text = "위치 매칭 중..."
-            }
-            return
-        }
+//        if !arSessionManager.isMapMatched {
+//            DispatchQueue.main.async { [weak self] in
+//                guard let self = self else { return }
+//                self.positionLabel.text = "위치 매칭 중..."
+//            }
+//            return
+//        }
         
         guard let position else { return }
         

@@ -9,7 +9,7 @@ import ARKit
 import RealityKit
 
 class ARObjectManager {
-    func createCloudAnchorModel() -> Entity? {
+    static func createCloudAnchorModel() -> Entity? {
         return try? Entity.load(named: Constants.cloudAnchorName)
     }
 }

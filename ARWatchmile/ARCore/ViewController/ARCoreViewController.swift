@@ -7,16 +7,27 @@
 
 import UIKit
 import ARKit
-import RealityKit
 import ARCore
+import RealityKit
 import Then
 import SnapKit
 
 final class ARCoreViewController: UIViewController {
-    private var arCoreManager: ARCoreManager!
-    private var arObjectManager = ARObjectManager()
+    private var arCloudAnchorManager: ARCloudAnchorManager
+    
+    private var resolvedModels: [UUID: Entity] = [:]
+    private let worldOrigin = AnchorEntity(world: matrix_identity_float4x4)
     
     private lazy var arView = ARView(frame: view.bounds, cameraMode: .ar, automaticallyConfigureSession: false)
+    
+    init(arCloudAnchorManager: ARCloudAnchorManager) {
+        self.arCloudAnchorManager = arCloudAnchorManager
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,9 +38,8 @@ final class ARCoreViewController: UIViewController {
     
     private func setupAR() {
         arView.session.delegate = self
-        arCoreManager = ARCoreManager(arView: arView)
-        arCoreManager.setupTapGesture()
-        arCoreManager.runSession(trackPlanes: true)
+        arCloudAnchorManager.startSession(arView: arView)
+        arView.scene.addAnchor(worldOrigin)
     }
     
     private func setupUI() {
@@ -39,31 +49,17 @@ final class ARCoreViewController: UIViewController {
 
 // MARK: - ARSessionDelegate
 extension ARCoreViewController: ARSessionDelegate {
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        for anchor in anchors {
-            if anchor is AREnvironmentProbeAnchor { continue }
-            // Visualize Plane Anchor
-            if let planeAnchor = (anchor as? ARPlaneAnchor) {
-                guard let model = ARPlaneManager.createPlaneModel(for: planeAnchor) else { continue }
-                ARPlaneManager.planeModels[planeAnchor.identifier] = model
-                let anchorEntity = AnchorEntity(.anchor(identifier: anchor.identifier))
-                anchorEntity.addChild(model)
-                arView.scene.addAnchor(anchorEntity)
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        guard let garSession = arCloudAnchorManager.garSession, let garFrame = try? garSession.update(frame) else { return }
+        for garAnchor in garFrame.anchors {
+            if let model = resolvedModels[garAnchor.identifier] {
+                model.transform = Transform(matrix: garAnchor.transform)
                 continue
             }
-            // Visualize Cloud Anchor
-            guard let model = arObjectManager.createCloudAnchorModel() else { continue }
-            let anchorEntity = AnchorEntity(.anchor(identifier: anchor.identifier))
-            anchorEntity.addChild(model)
-            arView.scene.addAnchor(anchorEntity)
-        }
-    }
-    
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-        for anchor in anchors {
-            guard let planeAnchor = (anchor as? ARPlaneAnchor) else { continue }
-            guard let model = ARPlaneManager.planeModels[planeAnchor.identifier] else { continue }
-            ARPlaneManager.updatePlaneModel(model, planeAnchor: planeAnchor)
+            guard let model = ARObjectManager.createCloudAnchorModel() else { continue }
+            resolvedModels[garAnchor.identifier] = model
+            model.transform = Transform(matrix: garAnchor.transform)
+            worldOrigin.addChild(model)
         }
     }
 }

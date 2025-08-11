@@ -8,6 +8,8 @@
 import Foundation
 
 enum Constants {
+    /// Google Cloud API Key.
+    static let apiKey = "AIzaSyDb0PzlE22LQ6RWMB3cxTc62dfWQPP4Vh4"
     /// User defaults key for storing anchor creation timestamps.
     static let timeDictionaryKey = "TimeStampDictionary"
     /// User defaults key for storing anchor IDs.

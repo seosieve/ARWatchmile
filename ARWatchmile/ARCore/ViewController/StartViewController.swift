@@ -11,7 +11,7 @@ import SnapKit
 
 class StartViewController: UIViewController {
     
-    private let manager = ARCloudAnchorManager()
+    private let arCloudAnchorManager = ARCloudAnchorManager()
     
     private var anchorIdSelection = Set<String>()
     private var anchorInfos = [AnchorInfo]()
@@ -32,7 +32,8 @@ class StartViewController: UIViewController {
     }
     
     @objc func resolvingButtonTapped() {
-        let arCoreVC = ARCoreViewController()
+        arCloudAnchorManager.transferAnchor(anchorIdSelection)
+        let arCoreVC = ARCoreViewController(arCloudAnchorManager: arCloudAnchorManager)
         navigationController?.pushViewController(arCoreVC, animated: true)
     }
     
@@ -65,7 +66,7 @@ class StartViewController: UIViewController {
     }
     
     private func setupAnchor() {
-        anchorInfos = manager.fetchAndPruneAnchors()
+        anchorInfos = arCloudAnchorManager.fetchAndPruneAnchors()
     }
 }
 
@@ -89,7 +90,7 @@ extension StartViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        anchorIdSelection.insert(anchorInfos[indexPath.row].id)   
+        anchorIdSelection.insert(anchorInfos[indexPath.row].id)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

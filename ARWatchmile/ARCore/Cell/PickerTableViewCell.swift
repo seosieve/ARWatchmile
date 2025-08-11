@@ -10,7 +10,7 @@ import SnapKit
 import Then
 
 final class PickerTableViewCell: UITableViewCell {
-    static let identifier = "CustomTableViewCell"
+    static let identifier = "PickerTableViewCell"
     
     let radioButton = UIButton(type: .custom).then {
         $0.layer.cornerRadius = 12
@@ -25,9 +25,15 @@ final class PickerTableViewCell: UITableViewCell {
         $0.font = .systemFont(ofSize: 16, weight: .medium)
     }
     
+    let timeLabel = UILabel().then {
+        $0.textColor = .lightGray
+        $0.font = .systemFont(ofSize: 16, weight: .medium)
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
+        self.backgroundColor = .white
         setupUI()
     }
     
@@ -51,6 +57,11 @@ final class PickerTableViewCell: UITableViewCell {
         titleLabel.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.left.equalTo(radioButton.snp.right).offset(12)
+        }
+        
+        contentView.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
             $0.right.equalToSuperview().inset(16)
         }
     }
@@ -60,7 +71,8 @@ final class PickerTableViewCell: UITableViewCell {
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0))
     }
     
-    func configure(title: String) {
-        titleLabel.text = title
+    func configure(anchorInfo: AnchorInfo) {
+        titleLabel.text = anchorInfo.name
+        timeLabel.text = anchorInfo.age
     }
 }

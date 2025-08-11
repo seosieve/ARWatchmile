@@ -11,10 +11,12 @@ import SnapKit
 
 class StartViewController: UIViewController {
     
-    private let data = ["첫 번째 타이틀", "두 번째 타이틀", "세 번째 타이틀", "네 번째 타이틀"]
+    private let manager = ARCloudAnchorManager()
+    
+    private var anchorInfos = [AnchorInfo]()
     
     private let tableView = UITableView().then {
-        $0.backgroundColor = .clear
+        $0.backgroundColor = .white
         $0.separatorStyle = .none
         $0.showsVerticalScrollIndicator = false
         $0.register(PickerTableViewCell.self, forCellReuseIdentifier: PickerTableViewCell.identifier)
@@ -38,6 +40,7 @@ class StartViewController: UIViewController {
         view.backgroundColor = .white
         tableView.dataSource = self
         tableView.delegate = self
+        setupAnchor()
         setupUI()
     }
     
@@ -58,26 +61,27 @@ class StartViewController: UIViewController {
             make.bottom.equalTo(resolvingButton.snp.top).offset(-20)
         }
     }
+    
+    private func setupAnchor() {
+        anchorInfos = manager.fetchAndPruneAnchors()
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension StartViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        data.count
+        anchorInfos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PickerTableViewCell.identifier, for: indexPath) as? PickerTableViewCell else {
             return UITableViewCell()
         }
         
-        cell.configure(title: data[indexPath.row])
+        cell.configure(anchorInfo: anchorInfos[indexPath.row])
         return cell
     }
     
-    // 높이 고정 또는 동적 설정 가능
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
     }

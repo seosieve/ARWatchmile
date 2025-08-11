@@ -14,6 +14,7 @@ import SnapKit
 
 final class ARCoreViewController: UIViewController {
     private var arCoreManager: ARCoreManager!
+    private var arObjectManager = ARObjectManager()
     
     private lazy var arView = ARView(frame: view.bounds, cameraMode: .ar, automaticallyConfigureSession: false)
     
@@ -51,7 +52,7 @@ extension ARCoreViewController: ARSessionDelegate {
                 continue
             }
             // Visualize Cloud Anchor
-            guard let model = ARCloudAnchorManager.createCloudAnchorModel() else { continue }
+            guard let model = arObjectManager.createCloudAnchorModel() else { continue }
             let anchorEntity = AnchorEntity(.anchor(identifier: anchor.identifier))
             anchorEntity.addChild(model)
             arView.scene.addAnchor(anchorEntity)

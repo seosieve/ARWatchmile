@@ -9,12 +9,6 @@ import ARKit
 import RealityKit
 
 class ARCloudAnchorManager {
-    private static let cloudAnchorName = "cloud_anchor"
-    
-    static func createCloudAnchorModel() -> Entity? {
-        return try? Entity.load(named: cloudAnchorName)
-    }
-    
     func fetchAndPruneAnchors() -> [AnchorInfo] {
         var timeDictionary = (UserDefaults.standard.dictionary(forKey: Constants.timeDictionaryKey) as? [String: Date]) ?? [:]
         var anchorIdDictionary = (UserDefaults.standard.dictionary(forKey: Constants.anchorIdDictionaryKey) as? [String: String]) ?? [:]

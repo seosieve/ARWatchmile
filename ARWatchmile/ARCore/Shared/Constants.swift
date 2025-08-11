@@ -12,6 +12,8 @@ enum Constants {
     static let timeDictionaryKey = "TimeStampDictionary"
     /// User defaults key for storing anchor IDs.
     static let anchorIdDictionaryKey = "AnchorIdDictionary"
-    /// 365Day to Second Integer
+    /// 3D model object filename.
+    static let cloudAnchorName = "cloud_anchor"
+    /// 365Day to second integer
     static let yearSecond: Double = 31_536_000
 }

@@ -20,6 +20,13 @@ final class PickerTableViewCell: UITableViewCell {
         $0.isUserInteractionEnabled = false
     }
     
+    private let innerCircle = UIView().then {
+        $0.backgroundColor = .white
+        $0.isHidden = true
+        $0.layer.cornerRadius = 8
+        $0.layer.masksToBounds = true
+    }
+    
     let titleLabel = UILabel().then {
         $0.textColor = .white
         $0.font = .systemFont(ofSize: 16, weight: .medium)
@@ -41,6 +48,11 @@ final class PickerTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        innerCircle.isHidden = selected ? false : true
+    }
+    
     private func setupUI() {
         contentView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         contentView.layer.cornerRadius = 8
@@ -51,6 +63,12 @@ final class PickerTableViewCell: UITableViewCell {
             $0.centerY.equalToSuperview()
             $0.left.equalToSuperview().offset(16)
             $0.width.height.equalTo(24)
+        }
+        
+        radioButton.addSubview(innerCircle)
+        innerCircle.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(16)
         }
         
         contentView.addSubview(titleLabel)

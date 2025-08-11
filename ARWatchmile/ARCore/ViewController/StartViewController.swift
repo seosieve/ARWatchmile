@@ -13,6 +13,7 @@ class StartViewController: UIViewController {
     
     private let manager = ARCloudAnchorManager()
     
+    private var anchorIdSelection = Set<String>()
     private var anchorInfos = [AnchorInfo]()
     
     private let tableView = UITableView().then {
@@ -38,6 +39,7 @@ class StartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        tableView.allowsMultipleSelection = true
         tableView.dataSource = self
         tableView.delegate = self
         setupAnchor()
@@ -84,5 +86,13 @@ extension StartViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        anchorIdSelection.insert(anchorInfos[indexPath.row].id)   
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        anchorIdSelection.remove(anchorInfos[indexPath.row].id)
     }
 }

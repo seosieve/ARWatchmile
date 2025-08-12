@@ -18,6 +18,8 @@ enum Constants {
     static let cloudAnchorName = "cloud_anchor"
     /// Office map image asset name.
     static let officeImage = "VestellaOfficeMap"
+    /// Office map image aspect ratio.
+    static let mapRatio: CGFloat = 3015.0 / 4554.0
 }
 
 enum Seconds {

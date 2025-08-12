@@ -13,7 +13,6 @@ class MiniMapView: UIView {
     private var officeImageView = UIImageView().then {
         $0.image = UIImage(named: Constants.officeImage)
         $0.contentMode = .scaleAspectFit
-        $0.alpha = 0.7 // 약간 투명하게
     }
     
     private var testBoxViews: [UIView] = []
@@ -33,7 +32,6 @@ class MiniMapView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
-        updateTestBoxes()
     }
     
     required init?(coder: NSCoder) {
@@ -43,12 +41,9 @@ class MiniMapView: UIView {
     private func setupUI() {
         addSubview(officeImageView)
         officeImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(365)
-            make.height.equalTo(100)
+            make.edges.equalToSuperview()
         }
         
-        // 내 위치 점 추가
         addSubview(playerDot)
         playerDot.snp.makeConstraints { make in
             make.center.equalToSuperview()

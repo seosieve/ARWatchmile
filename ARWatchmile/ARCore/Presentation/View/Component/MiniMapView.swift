@@ -10,8 +10,8 @@ import Then
 import SnapKit
 
 class MiniMapView: UIView {
-    private var officeMapImageView = UIImageView().then {
-        $0.image = UIImage(named: "OfficeMap")
+    private var officeImageView = UIImageView().then {
+        $0.image = UIImage(named: Constants.officeImage)
         $0.contentMode = .scaleAspectFit
         $0.alpha = 0.7 // 약간 투명하게
     }
@@ -41,13 +41,8 @@ class MiniMapView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        layer.cornerRadius = 8
-        layer.masksToBounds = true
-        
-        // OfficeMap 이미지 추가 (맨 뒤에)
-        addSubview(officeMapImageView)
-        officeMapImageView.snp.makeConstraints { make in
+        addSubview(officeImageView)
+        officeImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalTo(365)
             make.height.equalTo(100)
@@ -75,8 +70,8 @@ class MiniMapView: UIView {
             testBoxViews.append(objectView)
             
             objectView.snp.makeConstraints { make in
-                make.centerX.equalTo(officeMapImageView.snp.left).offset(x)
-                make.centerY.equalTo(officeMapImageView.snp.top).offset(y)
+                make.centerX.equalTo(officeImageView.snp.left).offset(x)
+                make.centerY.equalTo(officeImageView.snp.top).offset(y)
                 make.width.height.equalTo(6)
             }
         }
@@ -133,8 +128,8 @@ class MiniMapView: UIView {
         playerDot.backgroundColor = .yellow
         
         playerDot.snp.remakeConstraints { make in
-            make.centerX.equalTo(officeMapImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
-            make.centerY.equalTo(officeMapImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
+            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
+            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
             make.width.height.equalTo(8)
         }
     }

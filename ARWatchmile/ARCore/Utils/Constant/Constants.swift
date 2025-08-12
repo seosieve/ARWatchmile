@@ -16,6 +16,14 @@ enum Constants {
     static let anchorIdDictionaryKey = "AnchorIdDictionary"
     /// 3D model object filename.
     static let cloudAnchorName = "cloud_anchor"
-    /// 365Day to second integer
-    static let yearSecond: Double = 31_536_000
+    /// Office map image asset name.
+    static let officeImage = "VestellaOfficeMap"
+}
+
+enum Seconds {
+    static let minute: TimeInterval = 60
+    static let hour: TimeInterval = 60 * minute
+    static let day: TimeInterval = 24 * hour
+    static let month: TimeInterval = 30 * day
+    static let year: TimeInterval = 12 * month
 }

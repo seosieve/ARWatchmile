@@ -11,7 +11,13 @@ class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     private init() { }
     
-    @UserDefault("permanent_origin", defaultValue: [Float]())
+    @UserDefault(key: Constants.timeDictionaryKey, defaultValue: [:])
+    var timeDictionary: [String: Date]
+    
+    @UserDefault(key: Constants.anchorIdDictionaryKey, defaultValue: [:])
+    var anchorIdDictionary: [String: String]
+    
+    @UserDefault(key: "permanent_origin", defaultValue: [Float]())
     var permanentOrigin: [Float]
     
     // 편의 메서드 추가

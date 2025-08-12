@@ -1,5 +1,5 @@
 //
-//  StartViewController.swift
+//  ResolvingPickerViewController.swift
 //  ARWatchmile
 //
 //  Created by 베스텔라랩 on 8/5/25.
@@ -9,12 +9,9 @@ import UIKit
 import Then
 import SnapKit
 
-class StartViewController: UIViewController {
+class ResolvingPickerViewController: UIViewController {
     
-    private let arCloudAnchorManager = ARCloudAnchorManager()
-    
-    private var anchorIdSelection = Set<String>()
-    private var anchorInfos = [AnchorInfo]()
+    private var viewModel: ResolvingPickerViewModel
     
     private let tableView = UITableView().then {
         $0.backgroundColor = .white
@@ -32,9 +29,18 @@ class StartViewController: UIViewController {
     }
     
     @objc func resolvingButtonTapped() {
-        arCloudAnchorManager.transferAnchor(anchorIdSelection)
-        let arCoreVC = ARCoreViewController(arCloudAnchorManager: arCloudAnchorManager)
-        navigationController?.pushViewController(arCoreVC, animated: true)
+        let viewModel = ARCoreViewModel(selectedAnchor: viewModel.anchorIdSelection)
+        let viewController = ARCoreViewController(viewModel: viewModel)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    init(viewModel: ResolvingPickerViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -43,7 +49,6 @@ class StartViewController: UIViewController {
         tableView.allowsMultipleSelection = true
         tableView.dataSource = self
         tableView.delegate = self
-        setupAnchor()
         setupUI()
     }
     
@@ -64,24 +69,19 @@ class StartViewController: UIViewController {
             make.bottom.equalTo(resolvingButton.snp.top).offset(-20)
         }
     }
-    
-    private func setupAnchor() {
-        anchorInfos = arCloudAnchorManager.fetchAndPruneAnchors()
-    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
-extension StartViewController: UITableViewDataSource, UITableViewDelegate {
+extension ResolvingPickerViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        anchorInfos.count
+        viewModel.anchorInfos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PickerTableViewCell.identifier, for: indexPath) as? PickerTableViewCell else {
-            return UITableViewCell()
-        }
+        let reusableCell = tableView.dequeueReusableCell(withIdentifier: PickerTableViewCell.identifier, for: indexPath)
+        guard let cell = reusableCell as? PickerTableViewCell else { return UITableViewCell() }
         
-        cell.configure(anchorInfo: anchorInfos[indexPath.row])
+        cell.configure(anchorInfo: viewModel.anchorInfos[indexPath.row])
         return cell
     }
     
@@ -90,10 +90,10 @@ extension StartViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        anchorIdSelection.insert(anchorInfos[indexPath.row].id)
+        viewModel.selectAnchor(index: indexPath.row)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        anchorIdSelection.remove(anchorInfos[indexPath.row].id)
+        viewModel.deselectAnchor(index: indexPath.row)
     }
 }

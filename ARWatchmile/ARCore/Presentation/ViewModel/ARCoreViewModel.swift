@@ -18,6 +18,7 @@ class ARCoreViewModel {
     private var resolvedAnchorIds: [String] = []
     private var resolveFutures: [GARResolveCloudAnchorFuture] = []
     private var resolvedModels: [UUID: Entity] = [:]
+    private var anchorIdMap: [UUID: String] = [:]
     
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)
@@ -29,9 +30,11 @@ class ARCoreViewModel {
         for anchorId in resolvedAnchorIds {
             if let future = try? garSession.resolveCloudAnchor(anchorId, completionHandler: { [weak self] anchor, cloudState in
                 guard let self = self else { return }
+                guard let anchor = anchor else { return }
                 
                 if cloudState == .success {
                     print("Resolved \(anchorId), continuing to refine pose")
+                    self.anchorIdMap[anchor.identifier] = anchorId
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }
@@ -62,15 +65,35 @@ class ARCoreViewModel {
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
         for garAnchor in garFrame.anchors {
+            
+            // AnchorId 가져오기
+            if let cloudAnchorId = anchorIdMap[garAnchor.identifier] {
+                print(cloudAnchorId)
+            }
+            
+            // 이미 배치한 model 위치 이동
             if let model = resolvedModels[garAnchor.identifier] {
+                calculateDistance(frame: frame, garAnchor: garAnchor)
                 model.transform = Transform(matrix: garAnchor.transform)
                 continue
             }
+            
+            // Model 초기 배치
             guard let model = createCloudAnchorModel() else { continue }
             resolvedModels[garAnchor.identifier] = model
             model.transform = Transform(matrix: garAnchor.transform)
+            
             worldOrigin.addChild(model)
         }
+    }
+    
+    private func calculateDistance(frame: ARFrame, garAnchor: GARAnchor) {
+        let cameraPos = frame.camera.transform.translation
+        let anchorPos = garAnchor.transform.translation
+        
+        let relativePos = SIMD2<Float>(cameraPos.x - anchorPos.x, cameraPos.y - anchorPos.y)
+        
+        print(relativePos)
     }
     
     private func createCloudAnchorModel() -> Entity? {

@@ -67,6 +67,8 @@ final class ARCoreViewController: UIViewController {
 // MARK: - ARSessionDelegate
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        let a = frame.camera.transform.translation
+//        print(a)
         viewModel.updateResolvedAnchors(frame: frame)
     }
 }

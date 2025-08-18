@@ -10,6 +10,8 @@ import Then
 import SnapKit
 
 class MiniMapView: UIView {
+    private var mapSize = CGSize(width: 0, height: 0)
+    
     private var officeImageView = UIImageView().then {
         $0.image = UIImage(named: Constants.officeImage)
         $0.contentMode = .scaleAspectFit
@@ -38,6 +40,12 @@ class MiniMapView: UIView {
         super.init(coder: coder)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        mapSize = bounds.size
+        updateTestBoxes()
+    }
+    
     private func setupUI() {
         addSubview(officeImageView)
         officeImageView.snp.makeConstraints { make in
@@ -53,11 +61,12 @@ class MiniMapView: UIView {
     
     // MARK: - 빨간 테스트 박스 위치 생성
     func updateTestBoxes() {
-        let coordinates = [(0, 0), (0, 100), (80, 0), (80, 100)]
+        let scale = mapSize.width / Constants.originMapSize.width
+        let coordinates: [(CGFloat,CGFloat)] = [(3039, 601), (3039, 1006)]
         
         for (x, y) in coordinates {
             let objectView = UIView().then {
-                $0.backgroundColor = .red
+                $0.backgroundColor = .blue
                 $0.layer.cornerRadius = 2
             }
             
@@ -65,9 +74,9 @@ class MiniMapView: UIView {
             testBoxViews.append(objectView)
             
             objectView.snp.makeConstraints { make in
-                make.centerX.equalTo(officeImageView.snp.left).offset(x)
-                make.centerY.equalTo(officeImageView.snp.top).offset(y)
-                make.width.height.equalTo(6)
+                make.centerX.equalTo(officeImageView.snp.left).offset(x*scale)
+                make.centerY.equalTo(officeImageView.snp.top).offset(y*scale)
+                make.width.height.equalTo(4)
             }
         }
         

@@ -20,7 +20,7 @@ class MiniMapView: UIView {
     private var testBoxViews: [UIView] = []
     
     private var playerDot = UIView().then {
-        $0.backgroundColor = .clear
+        $0.backgroundColor = .red
         $0.layer.cornerRadius = 4
         $0.layer.masksToBounds = true
     }
@@ -82,31 +82,26 @@ class MiniMapView: UIView {
     }
     
     // MARK: - 내 위치 업데이트
-    func updatePlayerPosition(playerPosition: SIMD3<Float>) {
-        let sourcePoints: [SIMD3<Float>] = [
-            SIMD3<Float>(0.0, 0.0, 0.0),
-            SIMD3<Float>(6.7, 0.0, 6.0),
-            SIMD3<Float>(5.1, 0.0, -5.1),
-            SIMD3<Float>(11.7, 0.0, 0.8)
-        ]
-
-        let targetPoints: [SIMD3<Float>] = [
-            SIMD3<Float>(0.0, 0.0, 0.0),
-            SIMD3<Float>(0.0, 0.0, 100.0),
-            SIMD3<Float>(80.0, 0.0, 0.0),
-            SIMD3<Float>(80.0, 0.0, 100.0)
+    func updatePlayerPosition(sourcePoints: [SIMD2<Float>], playerPosition: SIMD2<Float>) {
+        let ratio: Float = Float(mapSize.width / Constants.originMapSize.width)
+        
+        let targetPoints: [SIMD2<Float>] = [
+            SIMD2<Float>(3039, 1006) * ratio,
+            SIMD2<Float>(2633, 236) * ratio,
+            SIMD2<Float>(3039, 601) * ratio,
         ]
         
         let transform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
-        let playerPosition2 = CGPoint(x: CGFloat(playerPosition.x), y: CGFloat(playerPosition.z))
+        let playerPosition2 = CGPoint(x: CGFloat(playerPosition.x), y: CGFloat(playerPosition.y))
         let transformedPoint = playerPosition2.applying(transform)
-        playerDot.backgroundColor = .yellow
+        print(transformedPoint)
+        playerDot.backgroundColor = .green
         
-        playerDot.snp.remakeConstraints { make in
-            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
-            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
-            make.width.height.equalTo(8)
-        }
+//        playerDot.snp.remakeConstraints { make in
+//            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
+//            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
+//            make.width.height.equalTo(8)
+//        }
     }
 }
 

@@ -212,6 +212,6 @@ class ARViewController: UIViewController, CLLocationManagerDelegate {
         
         // 소수점 한 자리까지 표시
         let playerPosition = SIMD3<Float>(x: relativeX, y: 0, z: relativeZ)
-        miniMapView.updatePlayerPosition(playerPosition: playerPosition)
+//        miniMapView.updatePlayerPosition(playerPosition: playerPosition)
     }
 }

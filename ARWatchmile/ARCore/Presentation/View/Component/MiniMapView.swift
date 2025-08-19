@@ -62,9 +62,9 @@ class MiniMapView: UIView {
     // MARK: - 빨간 테스트 박스 위치 생성
     func updateTestBoxes() {
         let scale = mapSize.width / Constants.originMapSize.width
-        let coordinates: [(CGFloat,CGFloat)] = [(3039, 601), (3039, 1006)]
+        let rawData = RawData.AnchorPointArr
         
-        for (x, y) in coordinates {
+        for (x, y) in rawData.values {
             let objectView = UIView().then {
                 $0.backgroundColor = .blue
                 $0.layer.cornerRadius = 2
@@ -78,33 +78,6 @@ class MiniMapView: UIView {
                 make.centerY.equalTo(officeImageView.snp.top).offset(y*scale)
                 make.width.height.equalTo(4)
             }
-        }
-        
-        affineTest()
-    }
-    
-    func affineTest() {
-        let sourcePoints: [SIMD3<Float>] = [
-            SIMD3<Float>(0.0, 0.0, 0.0),
-            SIMD3<Float>(6.7, 0.0, 6.0),
-            SIMD3<Float>(5.1, 0.0, -5.1),
-            SIMD3<Float>(11.7, 0.0, 0.8)
-        ]
-
-        let targetPoints: [SIMD3<Float>] = [
-            SIMD3<Float>(0.0, 0.0, 0.0),
-            SIMD3<Float>(0.0, 0.0, 100.0),
-            SIMD3<Float>(80.0, 0.0, 0.0),
-            SIMD3<Float>(80.0, 0.0, 100.0)
-        ]
-        
-        let transform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
-        
-        // 각 점을 테스트
-        for i in 0..<4 {
-            let sourcePoint = CGPoint(x: CGFloat(sourcePoints[i].x), y: CGFloat(sourcePoints[i].z))
-            let transformedPoint = sourcePoint.applying(transform)
-            let expectedPoint = CGPoint(x: CGFloat(targetPoints[i].x), y: CGFloat(targetPoints[i].z))
         }
     }
     

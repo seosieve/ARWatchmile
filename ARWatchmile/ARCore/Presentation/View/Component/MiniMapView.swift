@@ -108,8 +108,8 @@ class MiniMapView: UIView {
         playerDot.backgroundColor = .green
         
         playerDot.snp.remakeConstraints { make in
-            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
-            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
+            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x)
+            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y)
             make.width.height.equalTo(8)
         }
     }

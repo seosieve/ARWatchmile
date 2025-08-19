@@ -21,6 +21,12 @@ final class ARCoreViewController: UIViewController {
         $0.automaticallyConfigureSession = false
     }
     
+    private var dotStatusView = DotStatusView().then {
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        $0.layer.cornerRadius = 8
+        $0.layer.masksToBounds = true
+    }
+    
     private var miniMapView = MiniMapView().then {
         $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         $0.layer.cornerRadius = 8
@@ -70,6 +76,13 @@ final class ARCoreViewController: UIViewController {
             make.right.equalToSuperview().offset(-20)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.originMapRatio)
+        }
+        
+        view.addSubview(dotStatusView)
+        dotStatusView.snp.makeConstraints { make in
+            make.bottom.equalTo(miniMapView.snp.top).offset(-8)
+            make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(32)
         }
     }
 }

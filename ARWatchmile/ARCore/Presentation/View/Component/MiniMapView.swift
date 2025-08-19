@@ -83,22 +83,6 @@ class MiniMapView: UIView {
         affineTest()
     }
     
-    func createRandomPoints() {
-        let objectView = UIView().then {
-            $0.backgroundColor = .blue
-            $0.layer.cornerRadius = 2
-        }
-        
-        addSubview(objectView)
-        testBoxViews.append(objectView)
-        
-        objectView.snp.makeConstraints { make in
-            make.centerX.equalTo(officeImageView.snp.left).offset(Int.random(in: 0...300))
-            make.centerY.equalTo(officeImageView.snp.top).offset(Int.random(in: 0...300))
-            make.width.height.equalTo(4)
-        }
-    }
-    
     func affineTest() {
         let sourcePoints: [SIMD3<Float>] = [
             SIMD3<Float>(0.0, 0.0, 0.0),
@@ -121,8 +105,6 @@ class MiniMapView: UIView {
             let sourcePoint = CGPoint(x: CGFloat(sourcePoints[i].x), y: CGFloat(sourcePoints[i].z))
             let transformedPoint = sourcePoint.applying(transform)
             let expectedPoint = CGPoint(x: CGFloat(targetPoints[i].x), y: CGFloat(targetPoints[i].z))
-            
-            print("점 \(i): \(sourcePoint) → \(transformedPoint) (예상: \(expectedPoint))")
         }
     }
     

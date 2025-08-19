@@ -21,7 +21,7 @@ class ResolvingPickerViewModel {
 }
 
 // MARK: - Resolve Anchor Method
-extension ResolvingPickerViewModel {
+extension ResolvingPickerViewModel {    
     func fetchAndPruneAnchors() -> [AnchorInfo] {
         var timeDictionary = UserDefaultsManager.shared.timeDictionary
         var anchorIdDictionary = UserDefaultsManager.shared.anchorIdDictionary

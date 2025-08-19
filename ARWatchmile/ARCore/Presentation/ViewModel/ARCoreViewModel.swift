@@ -64,13 +64,8 @@ class ARCoreViewModel {
     
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
+        
         for garAnchor in garFrame.anchors {
-            
-            // AnchorId 가져오기
-            if let cloudAnchorId = anchorIdMap[garAnchor.identifier] {
-                print(cloudAnchorId)
-            }
-            
             // 이미 배치한 model 위치 이동
             if let model = resolvedModels[garAnchor.identifier] {
                 calculateDistance(frame: frame, garAnchor: garAnchor)
@@ -83,6 +78,13 @@ class ARCoreViewModel {
             resolvedModels[garAnchor.identifier] = model
             model.transform = Transform(matrix: garAnchor.transform)
             
+            // AnchorId 가져오기
+            if let cloudAnchorId = anchorIdMap[garAnchor.identifier] {
+                print(cloudAnchorId)
+                print(garAnchor.transform.translation)
+//                print(cloudAnchorId)
+            }
+            
             worldOrigin.addChild(model)
         }
     }
@@ -92,8 +94,6 @@ class ARCoreViewModel {
         let anchorPos = garAnchor.transform.translation
         
         let relativePos = SIMD2<Float>(cameraPos.x - anchorPos.x, cameraPos.y - anchorPos.y)
-        
-        print(relativePos)
     }
     
     private func createCloudAnchorModel() -> Entity? {

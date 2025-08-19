@@ -68,6 +68,5 @@ final class ARCoreViewController: UIViewController {
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
-//        miniMapView.createRandomPoints()
     }
 }

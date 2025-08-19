@@ -79,12 +79,10 @@ extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
         
-        guard let anchor1 = viewModel.anchor1 else { return }
-        guard let anchor2 = viewModel.anchor2 else { return }
-        guard let anchor3 = viewModel.anchor3 else { return }
+        guard viewModel.resolvedAnchor.count >= 3 else { return }
+        let resolvedAnchors = viewModel.resolvedAnchor
+        let playerPosition = frame.camera.transform.translation
         
-        let sourcePoints: [SIMD2<Float>] = [anchor1, anchor2, anchor3]
-        
-        miniMapView.updatePlayerPosition(sourcePoints: sourcePoints, playerPosition: frame.camera.transform.translation)
+        miniMapView.updatePlayerPosition(resolvedAnchors: resolvedAnchors, playerPosition: playerPosition)
     }
 }

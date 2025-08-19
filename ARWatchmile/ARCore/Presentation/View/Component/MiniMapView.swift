@@ -11,6 +11,8 @@ import SnapKit
 
 class MiniMapView: UIView {
     private var mapSize = CGSize(width: 0, height: 0)
+    private var ratio: Float = 0
+    private var affineTransform: CGAffineTransform?
     
     private var officeImageView = UIImageView().then {
         $0.image = UIImage(named: Constants.officeImage)
@@ -20,7 +22,7 @@ class MiniMapView: UIView {
     private var testBoxViews: [UIView] = []
     
     private var playerDot = UIView().then {
-        $0.backgroundColor = .red
+        $0.backgroundColor = .clear
         $0.layer.cornerRadius = 4
         $0.layer.masksToBounds = true
     }
@@ -43,6 +45,7 @@ class MiniMapView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         mapSize = bounds.size
+        ratio = Float(mapSize.width / Constants.originMapSize.width)
         updateTestBoxes()
     }
     
@@ -61,10 +64,10 @@ class MiniMapView: UIView {
     
     // MARK: - 빨간 테스트 박스 위치 생성
     func updateTestBoxes() {
-        let scale = mapSize.width / Constants.originMapSize.width
+        let scale: Float = Float(mapSize.width / Constants.originMapSize.width)
         let rawData = RawData.AnchorPointArr
         
-        for (x, y) in rawData.values {
+        for location in rawData.values {
             let objectView = UIView().then {
                 $0.backgroundColor = .blue
                 $0.layer.cornerRadius = 2
@@ -74,34 +77,41 @@ class MiniMapView: UIView {
             testBoxViews.append(objectView)
             
             objectView.snp.makeConstraints { make in
-                make.centerX.equalTo(officeImageView.snp.left).offset(x*scale)
-                make.centerY.equalTo(officeImageView.snp.top).offset(y*scale)
+                make.centerX.equalTo(officeImageView.snp.left).offset(location.x * scale)
+                make.centerY.equalTo(officeImageView.snp.top).offset(location.y * scale)
                 make.width.height.equalTo(4)
             }
         }
     }
     
-    // MARK: - 내 위치 업데이트
-    func updatePlayerPosition(sourcePoints: [SIMD2<Float>], playerPosition: SIMD2<Float>) {
-        let ratio: Float = Float(mapSize.width / Constants.originMapSize.width)
+    private func calculateAffine(resolvedAnchors: [ResolvedAnchor]) -> CGAffineTransform {
+        var sourcePoints: [SIMD2<Float>] = []
+        var targetPoints: [SIMD2<Float>] = []
         
-        let targetPoints: [SIMD2<Float>] = [
-            SIMD2<Float>(3039, 1006) * ratio,
-            SIMD2<Float>(2633, 236) * ratio,
-            SIMD2<Float>(3039, 601) * ratio,
-        ]
+        for anchor in resolvedAnchors {
+            sourcePoints.append(anchor.location)
+            targetPoints.append(RawData.AnchorPointArr[anchor.id]! * ratio)
+        }
         
         let transform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
-        let playerPosition2 = CGPoint(x: CGFloat(playerPosition.x), y: CGFloat(playerPosition.y))
-        let transformedPoint = playerPosition2.applying(transform)
+        
+        return transform
+    }
+    
+    // MARK: - 내 위치 업데이트
+    func updatePlayerPosition(resolvedAnchors: [ResolvedAnchor], playerPosition: SIMD2<Float>) {
+        let affineTransform = affineTransform ?? calculateAffine(resolvedAnchors: resolvedAnchors)
+
+        let playerPoint = CGPoint(x: CGFloat(playerPosition.x), y: CGFloat(playerPosition.y))
+        let transformedPoint = playerPoint.applying(affineTransform)
         print(transformedPoint)
         playerDot.backgroundColor = .green
         
-//        playerDot.snp.remakeConstraints { make in
-//            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
-//            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
-//            make.width.height.equalTo(8)
-//        }
+        playerDot.snp.remakeConstraints { make in
+            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x) // OfficeMap 중앙 기준
+            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y) // OfficeMap 중앙 기준
+            make.width.height.equalTo(8)
+        }
     }
 }
 

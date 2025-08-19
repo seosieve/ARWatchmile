@@ -20,9 +20,7 @@ class ARCoreViewModel {
     private var resolvedModels: [UUID: Entity] = [:]
     private var anchorIdMap: [UUID: String] = [:]
     
-    var anchor1: SIMD2<Float>?
-    var anchor2: SIMD2<Float>?
-    var anchor3: SIMD2<Float>?
+    var resolvedAnchor: [ResolvedAnchor] = []
     
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)
@@ -38,12 +36,9 @@ class ARCoreViewModel {
                 
                 if cloudState == .success {
                     print("Resolved \(anchorId), continuing to refine pose")
+                    // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
-                    if anchorId == "ua-2176bdc4351f88ba81705a195789551b" { anchor1 = anchor.transform.translation }
-                    if anchorId == "ua-38f273c97c0bab7afeffeac4a48294c8" { anchor2 = anchor.transform.translation }
-                    if anchorId == "ua-29b3bd27bc453443a010c9ff68ec7386" { anchor3 = anchor.transform.translation }
-                    
-                    
+                    resolvedAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }

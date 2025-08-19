@@ -18,6 +18,14 @@ class ResolvingPickerViewModel {
     func deselectAnchor(index: Int) {
         anchorIdSelection.remove(anchorInfos[index].id)
     }
+    
+    func selectAllAnchor() {
+        anchorIdSelection = Set(anchorInfos.map { $0.id })
+    }
+    
+    func deselectAllAnchor() {
+        anchorIdSelection.removeAll()
+    }
 }
 
 // MARK: - Resolve Anchor Method

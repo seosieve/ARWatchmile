@@ -40,4 +40,15 @@ class LogVisualizeView: UIView {
             logLabel.text = "nil"
         }
     }
+    
+    func affaineAnchorLog(affineAnchors: [ResolvedAnchor]) {
+        var textArr: [String] = []
+        
+        for anchor in affineAnchors {
+            let dic = UserDefaultsManager.shared.anchorIdDictionary.filter{ $0.value == anchor.id }.first!
+            textArr.append(dic.key)
+        }
+        
+        updateLog(textArr.joined(separator: ", "))
+    }
 }

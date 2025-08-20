@@ -104,22 +104,19 @@ final class ARCoreViewController: UIViewController {
 // MARK: - ARSessionDelegate
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        
-        var textArr: [String] = []
-        
-        for anchor in viewModel.affineAnchor {
-            let dic = UserDefaultsManager.shared.anchorIdDictionary.filter{ $0.value == anchor.id }.first!
-            textArr.append(dic.key)
-        }
-        
-        logVisualizeView.updateLog(textArr.joined(separator: ", "))
         viewModel.updateResolvedAnchors(frame: frame)
+        // 현재 AffaineAnchor 화면 전달
+        logVisualizeView.affaineAnchorLog(affineAnchors: viewModel.affineAnchors)
         // 1점 이상 Resolved일 때 AnchorColor 변경
-        guard let anchorId = viewModel.resolvedAnchor.last?.id else { return }
+        guard let anchorId = viewModel.resolvedAnchors.last?.id else { return }
+        print(anchorId)
         miniMapView.changeResolvedColor(of: anchorId, color: .darkGray)
         // 3점 이상 Resolved일 때 내 위치 표시
-        guard viewModel.affineAnchor.count >= 3 else { return }
-        let resolvedAnchors = viewModel.affineAnchor
+        guard viewModel.affineAnchors.count >= 3 else { return }
+        
+//        miniMapView.layoutAffineAnchorPoints(affineAnchors: viewModel.affineAnchors)
+        
+        let resolvedAnchors = viewModel.affineAnchors
         let playerPosition = frame.camera.transform.translation
         
         miniMapView.updatePlayerPosition(resolvedAnchors: resolvedAnchors, playerPosition: playerPosition)

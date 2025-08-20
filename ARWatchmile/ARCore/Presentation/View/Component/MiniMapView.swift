@@ -12,6 +12,7 @@ import SnapKit
 class MiniMapView: UIView {
     private var firstLayout = true
     private var ratio: Float = 0
+    private var resolvedCount: Int = 0
     private var affineTransform: CGAffineTransform?
     
     private var officeImageView = UIImageView().then {
@@ -86,12 +87,17 @@ extension MiniMapView {
         }
     }
     
-    func layoutAffineAnchorPoints(id: String) {
+    func layoutAffineAnchorPoints(affineAnchors: [ResolvedAnchor]) {
         let rawData = RawData.AnchorPointArr
-        guard let data = rawData.first(where: { $0.key == id }) else { return }
-        let anchorView = makeAnchorView(id: data.key, location: data.value, color: .yellow)
-        addSubview(anchorView)
-        affineAnchorViews.append(anchorView)
+        affineAnchorViews.forEach { $0.removeFromSuperview() }
+        affineAnchorViews.removeAll()
+        
+        for anchor in affineAnchors {
+            guard let data = rawData.first(where: { $0.key == anchor.id }) else { return }
+            let anchorView = makeAnchorView(id: data.key, location: data.value, color: .blue)
+            addSubview(anchorView)
+            affineAnchorViews.append(anchorView)
+        }
     }
     
     private func makeAnchorView(id: String, location: SIMD2<Float>, color: UIColor) -> UIView {
@@ -116,6 +122,7 @@ extension MiniMapView {
         
         playerDot.backgroundColor = .green
         playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
+        print(playerDot.center)
     }
     
     private func calculateAffine(resolvedAnchors: [ResolvedAnchor]) -> CGAffineTransform {

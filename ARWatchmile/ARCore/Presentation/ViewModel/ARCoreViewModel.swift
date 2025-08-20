@@ -20,8 +20,8 @@ class ARCoreViewModel {
     private var resolvedModels: [UUID: Entity] = [:]
     private var anchorIdMap: [UUID: String] = [:]
     
-    var resolvedAnchor: [ResolvedAnchor] = []
-    var affineAnchor: [ResolvedAnchor] = []
+    var resolvedAnchors: [ResolvedAnchor] = []
+    var affineAnchors: [ResolvedAnchor] = []
     
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)
@@ -40,8 +40,8 @@ class ARCoreViewModel {
                     // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
                     // Resolve된 Anchor
-                    resolvedAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
-                    affineAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    resolvedAnchors.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    affineAnchors.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }
@@ -72,9 +72,8 @@ class ARCoreViewModel {
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
         
-        print(affineAnchor.map{ $0.id })
-        
-        if affineAnchor.count == 4 {
+        print(affineAnchors.count)
+        if affineAnchors.count == 4 {
             removeLongest(frame: frame, garFrame: garFrame)
         }
         
@@ -107,9 +106,9 @@ class ARCoreViewModel {
             }
         }
         
-        guard let index = affineAnchor.firstIndex(where: { $0.id==longestId }) else { return }
-        affineAnchor.remove(at: index)
-        print("Remove")
+        guard let index = affineAnchors.firstIndex(where: { $0.id==longestId }) else { return }
+        affineAnchors.remove(at: index)
+        print(affineAnchors.map{ $0.id })
     }
     
     private func calculateDistance(frame: ARFrame, garAnchor: GARAnchor) -> Float {

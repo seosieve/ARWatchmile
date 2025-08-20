@@ -38,6 +38,7 @@ class ARCoreViewModel {
                     print("Resolved \(anchorId), continuing to refine pose")
                     // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
+                    // Resolve된 Anchor
                     resolvedAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
                 } else {
                     print("Failed to resolve \(anchorId): ")

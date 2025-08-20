@@ -11,24 +11,24 @@ import SnapKit
 
 class DotStatusView: UIView {
     
-    private let redDot = UIView().then {
-        $0.backgroundColor = .red
+    private let lightGrayDot = UIView().then {
+        $0.backgroundColor = .lightGray
         $0.layer.cornerRadius = 4
     }
     
-    private let redLabel = UILabel().then {
-        $0.text = "빨간점"
+    private let unresolvedLabel = UILabel().then {
+        $0.text = "Unresolved"
         $0.font = .systemFont(ofSize: 12, weight: .medium)
         $0.textColor = .white
     }
     
-    private let blueDot = UIView().then {
-        $0.backgroundColor = .blue
+    private let darkGrayDot = UIView().then {
+        $0.backgroundColor = .darkGray
         $0.layer.cornerRadius = 4
     }
     
-    private let blueLabel = UILabel().then {
-        $0.text = "파란점"
+    private let resolvedLabel = UILabel().then {
+        $0.text = "Resolved"
         $0.font = .systemFont(ofSize: 12, weight: .medium)
         $0.textColor = .white
     }
@@ -39,7 +39,7 @@ class DotStatusView: UIView {
     }
     
     private let yellowLabel = UILabel().then {
-        $0.text = "노란점"
+        $0.text = "Calculating"
         $0.font = .systemFont(ofSize: 12, weight: .medium)
         $0.textColor = .white
     }
@@ -55,35 +55,35 @@ class DotStatusView: UIView {
     }
     
     private func setupUI() {
-        addSubview(redDot)
-        redDot.snp.makeConstraints { make in
+        addSubview(lightGrayDot)
+        lightGrayDot.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(12)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(8)
         }
         
-        addSubview(redLabel)
-        redLabel.snp.makeConstraints { make in
-            make.leading.equalTo(redDot.snp.trailing).offset(8)
+        addSubview(unresolvedLabel)
+        unresolvedLabel.snp.makeConstraints { make in
+            make.leading.equalTo(lightGrayDot.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
         }
         
-        addSubview(blueDot)
-        blueDot.snp.makeConstraints { make in
-            make.leading.equalTo(redLabel.snp.trailing).offset(16)
+        addSubview(darkGrayDot)
+        darkGrayDot.snp.makeConstraints { make in
+            make.leading.equalTo(unresolvedLabel.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(8)
         }
         
-        addSubview(blueLabel)
-        blueLabel.snp.makeConstraints { make in
-            make.leading.equalTo(blueDot.snp.trailing).offset(8)
+        addSubview(resolvedLabel)
+        resolvedLabel.snp.makeConstraints { make in
+            make.leading.equalTo(darkGrayDot.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
         }
         
         addSubview(yellowDot)
         yellowDot.snp.makeConstraints { make in
-            make.leading.equalTo(blueLabel.snp.trailing).offset(16)
+            make.leading.equalTo(resolvedLabel.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(8)
         }

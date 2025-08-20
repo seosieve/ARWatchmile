@@ -91,6 +91,9 @@ final class ARCoreViewController: UIViewController {
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
+        viewModel.resolvedAnchor.forEach { anchor in
+            miniMapView.changeResolvedColor(of: anchor.id)
+        }
         
         guard viewModel.resolvedAnchor.count >= 3 else { return }
         let resolvedAnchors = viewModel.resolvedAnchor

@@ -10,7 +10,7 @@ import Then
 import SnapKit
 
 class MiniMapView: UIView {
-    private var mapSize = CGSize(width: 0, height: 0)
+    private var firstLayout = true
     private var ratio: Float = 0
     private var affineTransform: CGAffineTransform?
     
@@ -19,7 +19,7 @@ class MiniMapView: UIView {
         $0.contentMode = .scaleAspectFit
     }
     
-    private var testBoxViews: [UIView] = []
+    private var anchorViews: [UIView] = []
     
     private var playerDot = UIView().then {
         $0.backgroundColor = .clear
@@ -44,8 +44,9 @@ class MiniMapView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        mapSize = bounds.size
-        ratio = Float(mapSize.width / Constants.originMapSize.width)
+        guard firstLayout else { return }
+        firstLayout.toggle()
+        ratio = Float(bounds.size.width / Constants.originMapSize.width)
         updateTestBoxes()
     }
     
@@ -62,25 +63,31 @@ class MiniMapView: UIView {
         }
     }
     
-    // MARK: - 빨간 테스트 박스 위치 생성
+    // MARK: - Anchor Point 배치
     func updateTestBoxes() {
-        let scale: Float = Float(mapSize.width / Constants.originMapSize.width)
         let rawData = RawData.AnchorPointArr
         
-        for location in rawData.values {
+        for (id, location) in rawData {
             let objectView = UIView().then {
-                $0.backgroundColor = .blue
+                $0.backgroundColor = .lightGray
                 $0.layer.cornerRadius = 2
+                $0.accessibilityIdentifier = id
             }
             
             addSubview(objectView)
-            testBoxViews.append(objectView)
+            anchorViews.append(objectView)
             
             objectView.snp.makeConstraints { make in
-                make.centerX.equalTo(officeImageView.snp.left).offset(location.x * scale)
-                make.centerY.equalTo(officeImageView.snp.top).offset(location.y * scale)
+                make.centerX.equalTo(officeImageView.snp.left).offset(location.x * ratio)
+                make.centerY.equalTo(officeImageView.snp.top).offset(location.y * ratio)
                 make.width.height.equalTo(4)
             }
+        }
+    }
+    
+    func changeResolvedColor(of id: String) {
+        if let targetView = anchorViews.first(where: { $0.accessibilityIdentifier == id }) {
+            targetView.backgroundColor = .darkGray
         }
     }
     

@@ -62,29 +62,50 @@ class MiniMapView: UIView {
             make.width.height.equalTo(8)
         }
     }
-    
-    // MARK: - Anchor Point 배치
+}
+
+// MARK: - Anchor 색상 변경 관련 함수들
+extension MiniMapView {
+    func changeResolvedColor(of id: String, color: UIColor) {
+        if let targetView = anchorViews.first(where: { $0.accessibilityIdentifier == id }) {
+            targetView.backgroundColor = color
+        }
+    }
+}
+
+// MARK: - Anchor Point 배치 관련 함수들
+extension MiniMapView {
     func layoutAnchorPoints() {
         let rawData = RawData.AnchorPointArr
-        
         for (id, location) in rawData {
-            let objectView = UIView().then {
-                $0.frame.size = CGSize(width: 4, height: 4)
-                $0.backgroundColor = .lightGray
-                $0.layer.cornerRadius = 2
-                $0.accessibilityIdentifier = id
-                $0.center = CGPoint(location * ratio)
-            }
-            
-            addSubview(objectView)
-            anchorViews.append(objectView)
+            let anchorView = makeAnchorView(id: id, location: location)
+            addSubview(anchorView)
+            anchorViews.append(anchorView)
         }
     }
     
-    func changeResolvedColor(of id: String) {
-        if let targetView = anchorViews.first(where: { $0.accessibilityIdentifier == id }) {
-            targetView.backgroundColor = .darkGray
+    private func makeAnchorView(id: String, location: SIMD2<Float>) -> UIView {
+        let view = UIView().then {
+            $0.frame.size = CGSize(width: 4, height: 4)
+            $0.backgroundColor = .lightGray
+            $0.layer.cornerRadius = 2
+            $0.accessibilityIdentifier = id
+            $0.center = CGPoint(location * ratio)
         }
+        return view
+    }
+}
+
+// MARK: - 내 위치 관련 함수들
+extension MiniMapView {
+    func updatePlayerPosition(resolvedAnchors: [ResolvedAnchor], playerPosition: SIMD2<Float>) {
+        let affineTransform = affineTransform ?? calculateAffine(resolvedAnchors: resolvedAnchors)
+
+        let playerPoint = CGPoint(playerPosition)
+        let transformedPoint = playerPoint.applying(affineTransform)
+        
+        playerDot.backgroundColor = .green
+        playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
     }
     
     private func calculateAffine(resolvedAnchors: [ResolvedAnchor]) -> CGAffineTransform {
@@ -100,16 +121,4 @@ class MiniMapView: UIView {
         
         return transform
     }
-    
-    // MARK: - 내 위치 업데이트
-    func updatePlayerPosition(resolvedAnchors: [ResolvedAnchor], playerPosition: SIMD2<Float>) {
-        let affineTransform = affineTransform ?? calculateAffine(resolvedAnchors: resolvedAnchors)
-
-        let playerPoint = CGPoint(playerPosition)
-        let transformedPoint = playerPoint.applying(affineTransform)
-        
-        playerDot.backgroundColor = .green
-        playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
-    }
 }
-

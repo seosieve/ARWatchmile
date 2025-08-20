@@ -21,6 +21,12 @@ final class ARCoreViewController: UIViewController {
         $0.automaticallyConfigureSession = false
     }
     
+    private var logVisualizeView = LogVisualizeView().then {
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        $0.layer.cornerRadius = 8
+        $0.layer.masksToBounds = true
+    }
+    
     private var dotStatusView = DotStatusView().then {
         $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         $0.layer.cornerRadius = 8
@@ -70,6 +76,14 @@ final class ARCoreViewController: UIViewController {
     private func setupUI() {
         view.addSubview(arView)
         
+        view.addSubview(logVisualizeView)
+        logVisualizeView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.left.equalToSuperview().offset(20)
+            make.right.equalToSuperview().offset(-20)
+            make.height.equalTo(60)
+        }
+        
         view.addSubview(miniMapView)
         miniMapView.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(20)
@@ -93,9 +107,12 @@ extension ARCoreViewController: ARSessionDelegate {
         viewModel.updateResolvedAnchors(frame: frame)
         // 1점 이상 Resolved일 때 AnchorColor 변경
         guard let anchorId = viewModel.resolvedAnchor.last?.id else { return }
-        miniMapView.changeResolvedColor(of: anchorId)
+        miniMapView.changeResolvedColor(of: anchorId, color: .darkGray)
         // 3점 이상 Resolved일 때 내 위치 표시
         guard viewModel.resolvedAnchor.count >= 3 else { return }
+        miniMapView.changeResolvedColor(of: viewModel.resolvedAnchor[0].id, color: .yellow)
+        miniMapView.changeResolvedColor(of: viewModel.resolvedAnchor[1].id, color: .yellow)
+        miniMapView.changeResolvedColor(of: viewModel.resolvedAnchor[2].id, color: .yellow)
         let resolvedAnchors = viewModel.resolvedAnchor
         let playerPosition = frame.camera.transform.translation
         

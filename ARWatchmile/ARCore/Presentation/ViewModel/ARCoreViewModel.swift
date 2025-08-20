@@ -21,6 +21,7 @@ class ARCoreViewModel {
     private var anchorIdMap: [UUID: String] = [:]
     
     var resolvedAnchor: [ResolvedAnchor] = []
+    var affineAnchor: [ResolvedAnchor] = []
     
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)

@@ -21,6 +21,8 @@ class MiniMapView: UIView {
     
     private var anchorViews: [UIView] = []
     
+    private var affineAnchorViews: [UIView] = []
+    
     private var playerDot = UIView().then {
         $0.backgroundColor = .clear
         $0.layer.cornerRadius = 4
@@ -45,7 +47,7 @@ class MiniMapView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard firstLayout else { return }
-        firstLayout.toggle()
+        firstLayout = false
         ratio = Float(bounds.size.width / Constants.originMapSize.width)
         layoutAnchorPoints()
     }
@@ -75,19 +77,27 @@ extension MiniMapView {
 
 // MARK: - Anchor Point 배치 관련 함수들
 extension MiniMapView {
-    func layoutAnchorPoints() {
+    private func layoutAnchorPoints() {
         let rawData = RawData.AnchorPointArr
         for (id, location) in rawData {
-            let anchorView = makeAnchorView(id: id, location: location)
+            let anchorView = makeAnchorView(id: id, location: location, color: .lightGray)
             addSubview(anchorView)
             anchorViews.append(anchorView)
         }
     }
     
-    private func makeAnchorView(id: String, location: SIMD2<Float>) -> UIView {
+    func layoutAffineAnchorPoints(id: String) {
+        let rawData = RawData.AnchorPointArr
+        guard let data = rawData.first(where: { $0.key == id }) else { return }
+        let anchorView = makeAnchorView(id: data.key, location: data.value, color: .yellow)
+        addSubview(anchorView)
+        affineAnchorViews.append(anchorView)
+    }
+    
+    private func makeAnchorView(id: String, location: SIMD2<Float>, color: UIColor) -> UIView {
         let view = UIView().then {
             $0.frame.size = CGSize(width: 4, height: 4)
-            $0.backgroundColor = .lightGray
+            $0.backgroundColor = color
             $0.layer.cornerRadius = 2
             $0.accessibilityIdentifier = id
             $0.center = CGPoint(location * ratio)

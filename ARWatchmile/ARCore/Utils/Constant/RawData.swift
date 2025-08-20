@@ -15,5 +15,6 @@ enum RawData {
         "ua-ec6e3915ee2b2faa5534397fdeb1f069" : SIMD2<Float>(1558, 477),
         "ua-851689f9bc5f4fd1debb35b2bbc3cb79" : SIMD2<Float>(2605, 1045),
         "ua-7914c9bca74f7194caafa74ec376419b" : SIMD2<Float>(2911, 1619),
+        "ua-0ab096d5a394b6837fb8c0e2db149fe6" : SIMD2<Float>(3405, 384),
     ]
 }

@@ -41,6 +41,7 @@ class ARCoreViewModel {
                     self.anchorIdMap[anchor.identifier] = anchorId
                     // Resolve된 Anchor
                     resolvedAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    affineAnchor.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }
@@ -71,15 +72,13 @@ class ARCoreViewModel {
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
         
-        print(garFrame.anchors.count)
+        print(affineAnchor.map{ $0.id })
+        
+        if affineAnchor.count == 4 {
+            removeLongest(frame: frame, garFrame: garFrame)
+        }
         
         for garAnchor in garFrame.anchors {
-            // AnchorId 가져오기
-//            if let cloudAnchorId = anchorIdMap[garAnchor.identifier] {
-//                print("\(cloudAnchorId) : \(garAnchor.transform.translation)")
-//                calculateDistance(frame: frame, garAnchor: garAnchor)
-//            }
-            
             // 이미 배치한 model 위치 이동
             if let model = resolvedModels[garAnchor.identifier] {
                 model.transform = Transform(matrix: garAnchor.transform)
@@ -95,12 +94,29 @@ class ARCoreViewModel {
         }
     }
     
-    private func calculateDistance(frame: ARFrame, garAnchor: GARAnchor) {
+    private func removeLongest(frame: ARFrame, garFrame: GARFrame) {
+        var longest: Float = 0
+        var longestId: String = ""
+        
+        for garAnchor in garFrame.anchors {
+            guard let cloudAnchorId = anchorIdMap[garAnchor.identifier] else { continue }
+            let distance = calculateDistance(frame: frame, garAnchor: garAnchor)
+            if longest < distance {
+                longest = distance
+                longestId = cloudAnchorId
+            }
+        }
+        
+        guard let index = affineAnchor.firstIndex(where: { $0.id==longestId }) else { return }
+        affineAnchor.remove(at: index)
+        print("Remove")
+    }
+    
+    private func calculateDistance(frame: ARFrame, garAnchor: GARAnchor) -> Float {
         let cameraPos = frame.camera.transform.translation
         let anchorPos = garAnchor.transform.translation
         
-        let distance = simd_distance(cameraPos, anchorPos)
-        print(distance)
+        return simd_distance(cameraPos, anchorPos)
     }
     
     private func createCloudAnchorModel() -> Entity? {

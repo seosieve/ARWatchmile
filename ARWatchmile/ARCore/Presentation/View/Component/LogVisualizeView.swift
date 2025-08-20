@@ -32,4 +32,12 @@ class LogVisualizeView: UIView {
             make.center.equalToSuperview()
         }
     }
+    
+    func updateLog(_ value: Any?) {
+        if let value {
+            logLabel.text = String(describing: value)
+        } else {
+            logLabel.text = "nil"
+        }
+    }
 }

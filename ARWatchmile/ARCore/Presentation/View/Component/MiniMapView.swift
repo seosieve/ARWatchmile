@@ -47,7 +47,7 @@ class MiniMapView: UIView {
         guard firstLayout else { return }
         firstLayout.toggle()
         ratio = Float(bounds.size.width / Constants.originMapSize.width)
-        updateTestBoxes()
+        layoutAnchorPoints()
     }
     
     private func setupUI() {
@@ -64,24 +64,20 @@ class MiniMapView: UIView {
     }
     
     // MARK: - Anchor Point 배치
-    func updateTestBoxes() {
+    func layoutAnchorPoints() {
         let rawData = RawData.AnchorPointArr
         
         for (id, location) in rawData {
             let objectView = UIView().then {
+                $0.frame.size = CGSize(width: 4, height: 4)
                 $0.backgroundColor = .lightGray
                 $0.layer.cornerRadius = 2
                 $0.accessibilityIdentifier = id
+                $0.center = CGPoint(location * ratio)
             }
             
             addSubview(objectView)
             anchorViews.append(objectView)
-            
-            objectView.snp.makeConstraints { make in
-                make.centerX.equalTo(officeImageView.snp.left).offset(location.x * ratio)
-                make.centerY.equalTo(officeImageView.snp.top).offset(location.y * ratio)
-                make.width.height.equalTo(4)
-            }
         }
     }
     
@@ -109,16 +105,11 @@ class MiniMapView: UIView {
     func updatePlayerPosition(resolvedAnchors: [ResolvedAnchor], playerPosition: SIMD2<Float>) {
         let affineTransform = affineTransform ?? calculateAffine(resolvedAnchors: resolvedAnchors)
 
-        let playerPoint = CGPoint(x: CGFloat(playerPosition.x), y: CGFloat(playerPosition.y))
+        let playerPoint = CGPoint(playerPosition)
         let transformedPoint = playerPoint.applying(affineTransform)
-        print(transformedPoint)
-        playerDot.backgroundColor = .green
         
-        playerDot.snp.remakeConstraints { make in
-            make.centerX.equalTo(officeImageView.snp.left).offset(transformedPoint.x)
-            make.centerY.equalTo(officeImageView.snp.top).offset(transformedPoint.y)
-            make.width.height.equalTo(8)
-        }
+        playerDot.backgroundColor = .green
+        playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
     }
 }
 

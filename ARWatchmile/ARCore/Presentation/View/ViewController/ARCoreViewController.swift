@@ -91,10 +91,10 @@ final class ARCoreViewController: UIViewController {
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
-        viewModel.resolvedAnchor.forEach { anchor in
-            miniMapView.changeResolvedColor(of: anchor.id)
-        }
-        
+        // 1점 이상 Resolved일 때 AnchorColor 변경
+        guard let anchorId = viewModel.resolvedAnchor.last?.id else { return }
+        miniMapView.changeResolvedColor(of: anchorId)
+        // 3점 이상 Resolved일 때 내 위치 표시
         guard viewModel.resolvedAnchor.count >= 3 else { return }
         let resolvedAnchors = viewModel.resolvedAnchor
         let playerPosition = frame.camera.transform.translation

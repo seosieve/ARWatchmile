@@ -20,7 +20,11 @@ class UserDefaultsManager {
     @UserDefault(key: "permanent_origin", defaultValue: [Float]())
     var permanentOrigin: [Float]
     
-    // 편의 메서드 추가
+    // Method Sugar
+    func getAnchorName(id: String) -> String {
+        return anchorIdDictionary.first(where: { $0.value == id })?.key ?? ""
+    }
+    
     func setPermanentOrigin(position: SIMD3<Float>) {
         permanentOrigin = [position.x, position.y, position.z]
         print("✔️ 원점 설정됨: \(position.x), \(position.y), \(position.z)")

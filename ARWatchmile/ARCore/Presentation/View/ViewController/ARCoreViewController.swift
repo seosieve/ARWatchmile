@@ -11,9 +11,11 @@ import ARCore
 import RealityKit
 import Then
 import SnapKit
+import Combine
 
 final class ARCoreViewController: UIViewController {
     private var viewModel: ARCoreViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     private lazy var arView = ARView().then {
         $0.frame = view.bounds
@@ -54,6 +56,7 @@ final class ARCoreViewController: UIViewController {
         arView.session.delegate = self
         setupAR()
         setupUI()
+        setupCombine()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,24 +104,48 @@ final class ARCoreViewController: UIViewController {
     }
 }
 
+// MARK: - Combine Sink
+extension ARCoreViewController {
+    func setupCombine() {
+        bindNewAnchors()
+        bindAffineAnchors()
+    }
+    
+    func bindNewAnchors() {
+        viewModel.newAnchorPublisher
+            .sink { [weak self] newAnchor in
+                // Anchor 색 변경
+//                print("새 anchor 추가됨:", UserDefaultsManager.shared.getAnchorName(id: newAnchor.id))
+                self?.miniMapView.changeResolvedColor(of: newAnchor.id, color: .darkGray)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func bindAffineAnchors() {
+        viewModel.affineAnchorPublisher
+            .sink { anchors in
+                for anchor in anchors {
+//                    print("현재 AffineAnchor:", UserDefaultsManager.shared.getAnchorName(id: anchor.id), terminator: " ")
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
 // MARK: - ARSessionDelegate
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
         // 현재 AffaineAnchor 화면 전달
-        logVisualizeView.affaineAnchorLog(affineAnchors: viewModel.affineAnchors)
-        // 1점 이상 Resolved일 때 AnchorColor 변경
-        guard let anchorId = viewModel.resolvedAnchors.last?.id else { return }
-        print(anchorId)
-        miniMapView.changeResolvedColor(of: anchorId, color: .darkGray)
+//        logVisualizeView.affaineAnchorLog(affineAnchors: viewModel.affineAnchors)
         // 3점 이상 Resolved일 때 내 위치 표시
-        guard viewModel.affineAnchors.count >= 3 else { return }
+//        guard viewModel.affineAnchors.count >= 3 else { return }
         
 //        miniMapView.layoutAffineAnchorPoints(affineAnchors: viewModel.affineAnchors)
         
-        let resolvedAnchors = viewModel.affineAnchors
+//        let resolvedAnchors = viewModel.affineAnchors
         let playerPosition = frame.camera.transform.translation
         
-        miniMapView.updatePlayerPosition(resolvedAnchors: resolvedAnchors, playerPosition: playerPosition)
+//        miniMapView.updatePlayerPosition(resolvedAnchors: resolvedAnchors, playerPosition: playerPosition)
     }
 }

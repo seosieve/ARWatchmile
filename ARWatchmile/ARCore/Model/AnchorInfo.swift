@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AnchorInfo: Identifiable {
+struct AnchorInfo: Identifiable, Equatable {
     let id: String
     let name: String
     let age: String

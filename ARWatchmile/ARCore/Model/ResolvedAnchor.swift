@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ResolvedAnchor: Identifiable {
+struct ResolvedAnchor: Identifiable, Equatable {
     let id: String
     let location: SIMD2<Float>
     var distance: Float = .infinity

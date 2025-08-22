@@ -9,6 +9,7 @@ import ARKit
 import ARCore
 import ARKit
 import RealityKit
+import Combine
 
 class ARCoreViewModel {
     let worldOrigin = AnchorEntity(world: matrix_identity_float4x4)
@@ -20,8 +21,11 @@ class ARCoreViewModel {
     private var resolvedModels: [UUID: Entity] = [:]
     private var anchorIdMap: [UUID: String] = [:]
     
+    var cameraPos: SIMD2<Float> = .zero
     var resolvedAnchors: [ResolvedAnchor] = []
-    var affineAnchors: [ResolvedAnchor] = []
+    
+    var affineAnchorPublisher = PassthroughSubject<[ResolvedAnchor], Never>()
+    var newAnchorPublisher = PassthroughSubject<ResolvedAnchor, Never>()
     
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)
@@ -36,12 +40,13 @@ class ARCoreViewModel {
                 guard let anchor = anchor else { return }
                 
                 if cloudState == .success {
-                    print("Resolved \(anchorId), continuing to refine pose")
                     // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
                     // Resolve된 Anchor
                     resolvedAnchors.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
-                    affineAnchors.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    newAnchorPublisher.send(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    // Resolve된 Anchor 개수가 3개 이상일때 affineAnchorPublisher 초기화
+                    setAffineAnchors(resolvedAnchors: resolvedAnchors)
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }
@@ -71,11 +76,7 @@ class ARCoreViewModel {
     
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
-        
-        print(affineAnchors.count)
-        if affineAnchors.count == 4 {
-            removeLongest(frame: frame, garFrame: garFrame)
-        }
+        cameraPos = frame.camera.transform.translation
         
         for garAnchor in garFrame.anchors {
             // 이미 배치한 model 위치 이동
@@ -93,29 +94,17 @@ class ARCoreViewModel {
         }
     }
     
-    private func removeLongest(frame: ARFrame, garFrame: GARFrame) {
-        var longest: Float = 0
-        var longestId: String = ""
-        
-        for garAnchor in garFrame.anchors {
-            guard let cloudAnchorId = anchorIdMap[garAnchor.identifier] else { continue }
-            let distance = calculateDistance(frame: frame, garAnchor: garAnchor)
-            if longest < distance {
-                longest = distance
-                longestId = cloudAnchorId
+    private func setAffineAnchors(resolvedAnchors: [ResolvedAnchor]) {
+        let cameraPos = self.cameraPos
+        if resolvedAnchors.count >= 3 {
+            for i in 0..<resolvedAnchors.count {
+                self.resolvedAnchors[i].distance = simd_distance(cameraPos, resolvedAnchors[i].location)
             }
+            
+            let affineAnchors = Array(resolvedAnchors.sorted { $0.distance < $1.distance }.prefix(3))
+            print("\(affineAnchors.map{ UserDefaultsManager.shared.getAnchorName(id: $0.id) }), \(affineAnchors.map{ $0.distance })")
+            affineAnchorPublisher.send(affineAnchors)
         }
-        
-        guard let index = affineAnchors.firstIndex(where: { $0.id==longestId }) else { return }
-        affineAnchors.remove(at: index)
-        print(affineAnchors.map{ $0.id })
-    }
-    
-    private func calculateDistance(frame: ARFrame, garAnchor: GARAnchor) -> Float {
-        let cameraPos = frame.camera.transform.translation
-        let anchorPos = garAnchor.transform.translation
-        
-        return simd_distance(cameraPos, anchorPos)
     }
     
     private func createCloudAnchorModel() -> Entity? {

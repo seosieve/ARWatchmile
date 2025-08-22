@@ -122,7 +122,6 @@ extension MiniMapView {
         
         playerDot.backgroundColor = .green
         playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
-        print(playerDot.center)
     }
     
     private func calculateAffine(resolvedAnchors: [ResolvedAnchor]) -> CGAffineTransform {

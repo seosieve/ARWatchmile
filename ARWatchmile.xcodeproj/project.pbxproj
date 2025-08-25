@@ -43,7 +43,7 @@
 		CFEA26AB2E2F78A400B810F5 /* Exceptions for "ARWatchmile" folder in "ARWatchmile" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				App/Info.plist,
+				Application/Sources/Info.plist,
 			);
 			target = CFEA26822E2F78A200B810F5 /* ARWatchmile */;
 		};
@@ -320,7 +320,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 95KTQ65K5N;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ARWatchmile/App/Info.plist;
+				INFOPLIST_FILE = ARWatchmile/Application/Sources/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "AR 경험을 위해 카메라가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -353,7 +353,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 95KTQ65K5N;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ARWatchmile/App/Info.plist;
+				INFOPLIST_FILE = ARWatchmile/Application/Sources/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "AR 경험을 위해 카메라가 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

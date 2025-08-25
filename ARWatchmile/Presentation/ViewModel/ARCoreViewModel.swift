@@ -101,8 +101,7 @@ class ARCoreViewModel {
                 self.resolvedAnchors[i].distance = simd_distance(cameraPos, resolvedAnchors[i].location)
             }
             
-            let affineAnchors = Array(resolvedAnchors.sorted { $0.distance < $1.distance }.prefix(3))
-            print("\(affineAnchors.map{ UserDefaultsManager.shared.getAnchorName(id: $0.id) }), \(affineAnchors.map{ $0.distance })")
+            let affineAnchors = Array(self.resolvedAnchors.sorted { $0.distance < $1.distance }.prefix(3))
             affineAnchorPublisher.send(affineAnchors)
         }
     }

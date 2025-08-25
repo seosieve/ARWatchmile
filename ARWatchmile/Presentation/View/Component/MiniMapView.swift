@@ -108,8 +108,8 @@ extension MiniMapView {
 
 // MARK: - 내 위치 관련 함수들
 extension MiniMapView {
-    func updatePlayerPosition(resolvedAnchors: [ResolvedAnchor], playerPosition: SIMD2<Float>) {
-        let affineTransform = affineTransform ?? calculateAffine(resolvedAnchors: resolvedAnchors)
+    func updatePlayerPosition(playerPosition: SIMD2<Float>) {
+        guard let affineTransform else { return }
 
         let playerPoint = CGPoint(playerPosition)
         let transformedPoint = playerPoint.applying(affineTransform)
@@ -118,17 +118,15 @@ extension MiniMapView {
         playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
     }
     
-    private func calculateAffine(resolvedAnchors: [ResolvedAnchor]) -> CGAffineTransform {
+    func calculateAffine(affineAnchors: [ResolvedAnchor]) {
         var sourcePoints: [SIMD2<Float>] = []
         var targetPoints: [SIMD2<Float>] = []
         
-        for anchor in resolvedAnchors {
+        for anchor in affineAnchors {
             sourcePoints.append(anchor.location)
             targetPoints.append(RawData.AnchorPointArr[anchor.id]! * ratio)
         }
         
-        let transform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
-        
-        return transform
+        affineTransform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
     }
 }

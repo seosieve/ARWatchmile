@@ -123,10 +123,10 @@ extension ARCoreViewController {
     
     func bindAffineAnchors() {
         viewModel.affineAnchorPublisher
-            .sink { anchors in
-                for anchor in anchors {
-//                    print("현재 AffineAnchor:", UserDefaultsManager.shared.getAnchorName(id: anchor.id), terminator: " ")
-                }
+            .sink { [weak self] anchors in
+                self?.logVisualizeView.affaineAnchorLog(affineAnchors: anchors)
+                self?.miniMapView.layoutAffineAnchorPoints(affineAnchors: anchors)
+                self?.miniMapView.calculateAffine(affineAnchors: anchors)
             }
             .store(in: &cancellables)
     }
@@ -136,16 +136,7 @@ extension ARCoreViewController {
 extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
-        // 현재 AffaineAnchor 화면 전달
-//        logVisualizeView.affaineAnchorLog(affineAnchors: viewModel.affineAnchors)
         // 3점 이상 Resolved일 때 내 위치 표시
-//        guard viewModel.affineAnchors.count >= 3 else { return }
-        
-//        miniMapView.layoutAffineAnchorPoints(affineAnchors: viewModel.affineAnchors)
-        
-//        let resolvedAnchors = viewModel.affineAnchors
-        let playerPosition = frame.camera.transform.translation
-        
-//        miniMapView.updatePlayerPosition(resolvedAnchors: resolvedAnchors, playerPosition: playerPosition)
+        miniMapView.updatePlayerPosition(playerPosition: viewModel.cameraPos)
     }
 }

@@ -30,12 +30,6 @@ class MiniMapView: UIView {
         $0.layer.masksToBounds = true
     }
     
-    // 방향을 나타내는 부채꼴
-    private var directionCone = DirectionIndicatorView()
-    
-    // 방향 조절을 위한 각도 오프셋 (라디안 단위, 85도)
-    private var directionOffset: CGFloat = 60 * .pi / 180
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()

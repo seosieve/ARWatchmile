@@ -73,22 +73,26 @@ extension MiniMapView {
 // MARK: - Anchor Point 배치 관련 함수들
 extension MiniMapView {
     private func layoutAnchorPoints() {
-        let rawData = RawData.AnchorPointArr
-        for (id, location) in rawData {
-            let anchorView = makeAnchorView(id: id, location: location, color: .lightGray)
+        let cloudAnchors = MapDataRepository.shared.getAnchorPoints()
+        
+        for anchor in cloudAnchors {
+            let anchorView = makeAnchorView(id: anchor.id, location: SIMD2(anchor: anchor), color: .lightGray)
             addSubview(anchorView)
             anchorViews.append(anchorView)
         }
     }
     
     func layoutAffineAnchorPoints(affineAnchors: [ResolvedAnchor]) {
-        let rawData = RawData.AnchorPointArr
+        var cloudAnchors = MapDataRepository.shared.getAnchorPoints()
+        
         affineAnchorViews.forEach { $0.removeFromSuperview() }
         affineAnchorViews.removeAll()
         
-        for anchor in affineAnchors {
-            guard let data = rawData.first(where: { $0.key == anchor.id }) else { return }
-            let anchorView = makeAnchorView(id: data.key, location: data.value, color: .blue)
+        let affineAnchorIds = affineAnchors.map { $0.id }
+        cloudAnchors = cloudAnchors.filter { affineAnchorIds.contains($0.id) }
+        
+        for anchor in cloudAnchors {
+            let anchorView = makeAnchorView(id: anchor.id, location: SIMD2(anchor: anchor), color: .blue)
             addSubview(anchorView)
             affineAnchorViews.append(anchorView)
         }
@@ -121,10 +125,12 @@ extension MiniMapView {
     func calculateAffine(affineAnchors: [ResolvedAnchor]) {
         var sourcePoints: [SIMD2<Float>] = []
         var targetPoints: [SIMD2<Float>] = []
+        let cloudAnchors = MapDataRepository.shared.getAnchorPoints()
         
         for anchor in affineAnchors {
             sourcePoints.append(anchor.location)
-            targetPoints.append(RawData.AnchorPointArr[anchor.id]! * ratio)
+            let cloudAnchor = cloudAnchors.first(where: { $0.id == anchor.id })!
+            targetPoints.append(SIMD2(anchor: cloudAnchor) * ratio)
         }
         
         affineTransform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)

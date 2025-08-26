@@ -8,19 +8,20 @@
 import Foundation
 
 final class MapDataRepository {
-    static func fetchMapData() -> MapData? {
-        guard let url = Bundle.main.url(forResource: "VestellaOfficeMap", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            print("JSON 파일을 찾을 수 없습니다.")
-            return nil
-        }
-        
-        do {
-            let mapData = try JSONDecoder().decode(MapData.self, from: data)
-            return mapData
-        } catch {
-            print("JSON 파싱 실패: \(error)")
-            return nil
-        }
+    static let shared = MapDataRepository()
+    private(set) var mapData: MapData?
+    
+    private init() {
+        self.mapData = Self.load()
+    }
+    
+    private static func load() -> MapData? {
+        guard let url = Bundle.main.url(forResource: "VestellaOfficeMap", withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(MapData.self, from: data)
+    }
+    
+    func getAnchorPoints() -> [CloudAnchor] {
+        guard let mapData else { return [] }
+        return mapData.data.floor[0].anchor
     }
 }

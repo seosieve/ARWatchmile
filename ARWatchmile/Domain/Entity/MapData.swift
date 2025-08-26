@@ -36,7 +36,7 @@ struct Floor: Codable {
     let beacon: [String]
     let route: [Route]
     let routePaths: [RoutePath]
-    let anchor: [Anchor]
+    let anchor: [CloudAnchor]
 }
 
 // 경로 점
@@ -54,7 +54,7 @@ struct RoutePath: Codable {
 }
 
 // 앵커
-struct Anchor: Codable {
+struct CloudAnchor: Codable {
     let id: String
     let name: String
     let x: Int

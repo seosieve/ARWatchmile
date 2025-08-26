@@ -24,6 +24,8 @@ class MiniMapView: UIView {
     
     private var routePathViews: [UIView] = []
     
+    private var pointOfInterestViews: [UIView] = []
+    
     private var cloudAnchorViews: [UIView] = []
     
     private var affineAnchorViews: [UIView] = []
@@ -76,11 +78,15 @@ extension MiniMapView {
 
 // MARK: - Anchor Point 배치 관련 함수들
 extension MiniMapView {
+    private func layoutPointOfInterests() {
+        
+    }
+    
     private func layoutAnchorPoints() {
         let cloudAnchors = MapDataRepository.shared.getAnchorPoints()
         
         for anchor in cloudAnchors {
-            let anchorView = makeAnchorView(id: anchor.id, location: SIMD2(anchor: anchor), color: .lightGray)
+            let anchorView = makeDotView(id: anchor.id, location: SIMD2(anchor: anchor), color: .lightGray)
             addSubview(anchorView)
             cloudAnchorViews.append(anchorView)
         }
@@ -96,13 +102,13 @@ extension MiniMapView {
         cloudAnchors = cloudAnchors.filter { affineAnchorIds.contains($0.id) }
         
         for anchor in cloudAnchors {
-            let anchorView = makeAnchorView(id: anchor.id, location: SIMD2(anchor: anchor), color: .blue)
+            let anchorView = makeDotView(id: anchor.id, location: SIMD2(anchor: anchor), color: .blue)
             addSubview(anchorView)
             affineAnchorViews.append(anchorView)
         }
     }
     
-    private func makeAnchorView(id: String, location: SIMD2<Float>, color: UIColor) -> UIView {
+    private func makeDotView(id: String, location: SIMD2<Float>, color: UIColor) -> UIView {
         let view = UIView().then {
             $0.frame.size = CGSize(width: 4, height: 4)
             $0.backgroundColor = color
@@ -118,12 +124,27 @@ extension MiniMapView {
 extension MiniMapView {
     func updatePlayerPosition(playerPosition: SIMD2<Float>) {
         guard let affineTransform else { return }
-
         let playerPoint = CGPoint(playerPosition)
         let transformedPoint = playerPoint.applying(affineTransform)
         
         playerDot.backgroundColor = .green
         playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
+        
+//        print(mapToAR(SIMD2(2964, 273)))
+//        let mapPoint = CGPoint(x: 2964.0, y: 273.0)
+//        
+//        let arPoint = mapPoint.applying(affineTransform.inverted())
+//        print(arPoint)  // AR 좌표
+    }
+    
+    func mapToAR(_ mapPos: SIMD2<Float>) -> SIMD2<Float>? {
+        guard let affine = affineTransform else { return nil }
+        
+        // Map 좌표를 ratio로 나누어서 원래 AR 좌표 스케일에 맞춤
+        let point = CGPoint(x: CGFloat(mapPos.x) * CGFloat(ratio), y: CGFloat(mapPos.y) * CGFloat(ratio))
+        
+        let arPoint = point.applying(affine.inverted())
+        return SIMD2<Float>(Float(arPoint.x), Float(arPoint.y))
     }
     
     func calculateAffine(affineAnchors: [ResolvedAnchor]) {

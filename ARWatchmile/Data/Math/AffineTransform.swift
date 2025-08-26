@@ -32,7 +32,7 @@ enum AffineTransform {
             A[(2*i+1)*6 + 4] = sy
             A[(2*i+1)*6 + 5] = 1
 
-            b[2*i]   = dx
+            b[2*i] = dx
             b[2*i+1] = dy
         }
 
@@ -40,10 +40,8 @@ enum AffineTransform {
         var AtA = [Double](repeating: 0, count: 36)
         var Atb = [Double](repeating: 0, count: 6)
 
-        cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans,
-                    6, 6, Int32(2*n), 1.0, A, 6, A, 6, 0.0, &AtA, 6)
-        cblas_dgemv(CblasRowMajor, CblasTrans,
-                    Int32(2*n), 6, 1.0, A, 6, b, 1, 0.0, &Atb, 1)
+        cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, 6, 6, Int32(2*n), 1.0, A, 6, A, 6, 0.0, &AtA, 6)
+        cblas_dgemv(CblasRowMajor, CblasTrans, Int32(2*n), 6, 1.0, A, 6, b, 1, 0.0, &Atb, 1)
 
         // 풀기
         var N: __CLPK_integer = 6

@@ -81,7 +81,9 @@ class ARCoreViewModel {
         for garAnchor in garFrame.anchors {
             // 이미 배치한 model 위치 이동
             if let model = resolvedModels[garAnchor.identifier] {
-                model.transform = Transform(matrix: garAnchor.transform)
+                var transform = Transform(matrix: garAnchor.transform)
+                transform.scale *= SIMD3<Float>(5.0, 5.0, 5.0)  // 기존 matrix 스케일 고려
+                model.transform = transform
                 continue
             }
             

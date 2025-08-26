@@ -20,7 +20,11 @@ class MiniMapView: UIView {
         $0.contentMode = .scaleAspectFit
     }
     
-    private var anchorViews: [UIView] = []
+    private var routePointViews: [UIView] = []
+    
+    private var routePathViews: [UIView] = []
+    
+    private var cloudAnchorViews: [UIView] = []
     
     private var affineAnchorViews: [UIView] = []
     
@@ -64,7 +68,7 @@ class MiniMapView: UIView {
 // MARK: - Anchor 색상 변경 관련 함수들
 extension MiniMapView {
     func changeResolvedColor(of id: String, color: UIColor) {
-        if let targetView = anchorViews.first(where: { $0.accessibilityIdentifier == id }) {
+        if let targetView = cloudAnchorViews.first(where: { $0.accessibilityIdentifier == id }) {
             targetView.backgroundColor = color
         }
     }
@@ -78,7 +82,7 @@ extension MiniMapView {
         for anchor in cloudAnchors {
             let anchorView = makeAnchorView(id: anchor.id, location: SIMD2(anchor: anchor), color: .lightGray)
             addSubview(anchorView)
-            anchorViews.append(anchorView)
+            cloudAnchorViews.append(anchorView)
         }
     }
     

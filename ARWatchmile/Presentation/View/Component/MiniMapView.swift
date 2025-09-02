@@ -16,16 +16,16 @@ class MiniMapView: UIView {
     private var affineTransform: CGAffineTransform?
     
     // 핀치 확대/축소 관련 프로퍼티
-    private var zoomScale: CGFloat = 1.0
+    var zoomScale: CGFloat = 1.0
     private let minZoomScale: CGFloat = 0.7
-    private let maxZoomScale: CGFloat = 2.5
+    private let maxZoomScale: CGFloat = 2.3
     
     // 드래그 관련 프로퍼티
-    private var panOffset: CGPoint = .zero
+    var panOffset: CGPoint = .zero
     
     // 제스처 상태 추적
-    private var isPanning: Bool = false
-    private var lastPanTranslation: CGPoint = .zero
+    var isPanning: Bool = false
+    var lastPanTranslation: CGPoint = .zero
     
     // 모든 맵 요소들을 담는 컨테이너 뷰
     private var mapContainerView = UIView()
@@ -162,7 +162,7 @@ extension MiniMapView {
         }
     }
     
-    private func updateMapTransform() {
+    func updateMapTransform() {
         // 확대/축소와 드래그를 결합한 transform 적용
         mapContainerView.transform = CGAffineTransform(scaleX: zoomScale, y: zoomScale)
         mapContainerView.center = CGPoint(x: bounds.midX + panOffset.x, y: bounds.midY + panOffset.y)

@@ -29,17 +29,7 @@ final class ARCoreViewController: UIViewController {
         $0.layer.masksToBounds = true
     }
     
-    private var dotStatusView = DotStatusView().then {
-        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        $0.layer.cornerRadius = 8
-        $0.layer.masksToBounds = true
-    }
-    
-    private var miniMapView = MiniMapView().then {
-        $0.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        $0.layer.cornerRadius = 8
-        $0.layer.masksToBounds = true
-    }
+    private var mapDashBoardContainer = MapDashBoardContainer()
     
     init(viewModel: ARCoreViewModel) {
         self.viewModel = viewModel
@@ -87,19 +77,11 @@ final class ARCoreViewController: UIViewController {
             make.height.equalTo(60)
         }
         
-        view.addSubview(miniMapView)
-        miniMapView.snp.makeConstraints { make in
+        view.addSubview(mapDashBoardContainer)
+        mapDashBoardContainer.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.originConvensiaMapRatio)
-        }
-        
-        view.addSubview(dotStatusView)
-        dotStatusView.snp.makeConstraints { make in
-            make.bottom.equalTo(miniMapView.snp.top).offset(-8)
-            make.right.equalToSuperview().offset(-20)
-            make.height.equalTo(32)
         }
     }
 }
@@ -114,7 +96,7 @@ extension ARCoreViewController {
     func bindNewAnchors() {
         viewModel.newAnchorPublisher
             .sink { [weak self] newAnchor in
-                self?.miniMapView.changeResolvedColor(of: newAnchor.id, color: .darkGray)
+                self?.mapDashBoardContainer.miniMapView.changeResolvedColor(of: newAnchor.id, color: .darkGray)
             }
             .store(in: &cancellables)
     }
@@ -123,9 +105,9 @@ extension ARCoreViewController {
         viewModel.affineAnchorPublisher
             .sink { [weak self] anchors in
                 self?.logVisualizeView.affaineAnchorLog(affineAnchors: anchors)
-                self?.miniMapView.layoutAffineAnchorPoints(affineAnchors: anchors)
-                self?.miniMapView.calculateAffine(affineAnchors: anchors)
-                self?.miniMapView.calculatePOIARPosition()
+                self?.mapDashBoardContainer.miniMapView.layoutAffineAnchorPoints(affineAnchors: anchors)
+                self?.mapDashBoardContainer.miniMapView.calculateAffine(affineAnchors: anchors)
+                self?.mapDashBoardContainer.miniMapView.calculatePOIARPosition()
             }
             .store(in: &cancellables)
     }
@@ -136,6 +118,6 @@ extension ARCoreViewController: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         viewModel.updateResolvedAnchors(frame: frame)
         // 3점 이상 Resolved일 때 내 위치 표시
-        miniMapView.updatePlayerPosition(playerPosition: viewModel.cameraPos)
+        mapDashBoardContainer.miniMapView.updatePlayerPosition(playerPosition: viewModel.cameraPos)
     }
 }

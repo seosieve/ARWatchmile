@@ -32,12 +32,12 @@ class DotStatusView: UIView {
         $0.textColor = .white
     }
     
-    private let yellowDot = UIView().then {
-        $0.backgroundColor = .yellow
+    private let calculatingDot = UIView().then {
+        $0.backgroundColor = .blue
         $0.layer.cornerRadius = 4
     }
     
-    private let yellowLabel = UILabel().then {
+    private let calculatingLabel = UILabel().then {
         $0.text = "Calculating"
         $0.font = .systemFont(ofSize: 12, weight: .medium)
         $0.textColor = .white
@@ -80,16 +80,16 @@ class DotStatusView: UIView {
             make.centerY.equalToSuperview()
         }
         
-        addSubview(yellowDot)
-        yellowDot.snp.makeConstraints { make in
+        addSubview(calculatingDot)
+        calculatingDot.snp.makeConstraints { make in
             make.leading.equalTo(resolvedLabel.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
             make.width.height.equalTo(8)
         }
         
-        addSubview(yellowLabel)
-        yellowLabel.snp.makeConstraints { make in
-            make.leading.equalTo(yellowDot.snp.trailing).offset(8)
+        addSubview(calculatingLabel)
+        calculatingLabel.snp.makeConstraints { make in
+            make.leading.equalTo(calculatingDot.snp.trailing).offset(8)
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().offset(-12)
         }

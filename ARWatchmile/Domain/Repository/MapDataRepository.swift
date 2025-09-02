@@ -16,8 +16,13 @@ final class MapDataRepository {
     }
     
     private static func load() -> MapData? {
-        guard let url = Bundle.main.url(forResource: "VestellaOfficeMap", withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
+        guard let url = Bundle.main.url(forResource: "Convensia", withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(MapData.self, from: data)
+    }
+    
+    func getAnchorIds() -> [String] {
+        guard let mapData else { return [] }
+        return mapData.data.floor[0].anchor.map{ $0.id }
     }
     
     func getAnchorPoints() -> [CloudAnchor] {

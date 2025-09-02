@@ -15,8 +15,8 @@ class MiniMapView: UIView {
     private var resolvedCount: Int = 0
     private var affineTransform: CGAffineTransform?
     
-    private var officeImageView = UIImageView().then {
-        $0.image = UIImage(named: Constants.officeImage)
+    private var convensiaImageView = UIImageView().then {
+        $0.image = UIImage(named: Constants.convensiaImage)
         $0.contentMode = .scaleAspectFit
     }
     
@@ -49,14 +49,14 @@ class MiniMapView: UIView {
         super.layoutSubviews()
         guard firstLayout else { return }
         firstLayout = false
-        ratio = Float(bounds.size.width / Constants.originMapSize.width)
+        ratio = Float(bounds.size.width / Constants.originConvensiaMapSize.width)
         layoutPointOfInterests()
         layoutAnchorPoints()
     }
     
     private func setupUI() {
-        addSubview(officeImageView)
-        officeImageView.snp.makeConstraints { make in
+        addSubview(convensiaImageView)
+        convensiaImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         

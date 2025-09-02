@@ -92,7 +92,7 @@ final class ARCoreViewController: UIViewController {
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.originMapRatio)
+            make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.originConvensiaMapRatio)
         }
         
         view.addSubview(dotStatusView)

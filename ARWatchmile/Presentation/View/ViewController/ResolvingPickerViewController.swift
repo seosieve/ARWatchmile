@@ -56,7 +56,7 @@ class ResolvingPickerViewController: UIViewController {
     }
     
     @objc func resolvingButtonTapped() {
-        let viewModel = ARCoreViewModel(selectedAnchor: viewModel.anchorIdSelection)
+        let viewModel = ARCoreViewModel()
         let viewController = ARCoreViewController(viewModel: viewModel)
         navigationController?.pushViewController(viewController, animated: true)
     }

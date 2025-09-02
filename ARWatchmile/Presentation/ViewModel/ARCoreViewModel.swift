@@ -29,8 +29,8 @@ class ARCoreViewModel {
     
     private var resolvedGARAnchors: [GARAnchor] = []
     
-    init(selectedAnchor: Set<String>) {
-        resolvedAnchorIds = Array(selectedAnchor)
+    init() {
+        resolvedAnchorIds = MapDataRepository.shared.getAnchorIds()
         resolveAnchors()
     }
     

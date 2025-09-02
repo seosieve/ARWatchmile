@@ -19,9 +19,15 @@ enum Constants {
     /// Office map image asset name.
     static let officeImage = "VestellaOfficeMap"
     /// Office map image aspect ratio.
-    static let originMapSize: CGSize = CGSize(width: 4554.0, height: 3015.0)
+    static let originOfficeMapSize: CGSize = CGSize(width: 4554.0, height: 3015.0)
     /// Office map image aspect ratio.
-    static let originMapRatio: CGFloat = originMapSize.height / originMapSize.width
+    static let originOfficeMapRatio: CGFloat = originOfficeMapSize.height / originOfficeMapSize.width
+    /// Office map image asset name.
+    static let convensiaImage = "Convensia"
+    /// Office map image aspect ratio.
+    static let originConvensiaMapSize: CGSize = CGSize(width: 10088.0, height: 7545.0)
+    /// Office map image aspect ratio.
+    static let originConvensiaMapRatio: CGFloat = originConvensiaMapSize.height / originConvensiaMapSize.width
 }
 
 enum Seconds {

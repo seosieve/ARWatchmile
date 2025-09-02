@@ -17,8 +17,15 @@ class MiniMapView: UIView {
     
     // 핀치 확대/축소 관련 프로퍼티
     private var zoomScale: CGFloat = 1.0
-    private let minZoomScale: CGFloat = 0.5
-    private let maxZoomScale: CGFloat = 3.0
+    private let minZoomScale: CGFloat = 0.7
+    private let maxZoomScale: CGFloat = 2.5
+    
+    // 드래그 관련 프로퍼티
+    private var panOffset: CGPoint = .zero
+    
+    // 제스처 상태 추적
+    private var isPanning: Bool = false
+    private var lastPanTranslation: CGPoint = .zero
     
     // 모든 맵 요소들을 담는 컨테이너 뷰
     private var mapContainerView = UIView()
@@ -83,6 +90,14 @@ class MiniMapView: UIView {
         // 핀치 제스처 추가
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         addGestureRecognizer(pinchGesture)
+        
+        // 팬 제스처 추가 (드래그)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        addGestureRecognizer(panGesture)
+        
+        // 핀치와 팬 제스처가 동시에 인식되도록 설정
+        pinchGesture.delegate = self
+        panGesture.delegate = self
     }
 }
 
@@ -98,13 +113,85 @@ extension MiniMapView {
             
             guard clampedScale != zoomScale else { return }
             
-            zoomScale = clampedScale
+            // 핀치 중심점 (현재 뷰 좌표계 기준)
+            let pinchCenter = gesture.location(in: self)
             
-            // 컨테이너 뷰만 transform하면 모든 자식 뷰들이 함께 확대/축소됨
-            mapContainerView.transform = CGAffineTransform(scaleX: zoomScale, y: zoomScale)
+            // 현재 맵 컨테이너의 중심점 (panOffset 적용된 상태)
+            let currentMapCenter = CGPoint(x: bounds.midX + panOffset.x, y: bounds.midY + panOffset.y)
+            
+            // 핀치 중심점에서 맵 중심점까지의 벡터
+            let vectorX = currentMapCenter.x - pinchCenter.x
+            let vectorY = currentMapCenter.y - pinchCenter.y
+            
+            // 스케일 변화 비율
+            let scaleRatio = clampedScale / zoomScale
+            
+            // 핀치 중심점을 기준으로 확대/축소하기 위한 새로운 맵 중심점 계산
+            let newMapCenterX = pinchCenter.x + vectorX * scaleRatio
+            let newMapCenterY = pinchCenter.y + vectorY * scaleRatio
+            
+            // 새로운 panOffset 계산
+            panOffset.x = newMapCenterX - bounds.midX
+            panOffset.y = newMapCenterY - bounds.midY
+            
+            zoomScale = clampedScale
+            updateMapTransform()
             
             gesture.scale = 1.0
         }
+    }
+    
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self)
+        
+        if gesture.state == .began {
+            isPanning = true
+            lastPanTranslation = translation
+        } else if gesture.state == .changed {
+            let deltaX = translation.x - lastPanTranslation.x
+            let deltaY = translation.y - lastPanTranslation.y
+            
+            panOffset.x += deltaX
+            panOffset.y += deltaY
+            updateMapTransform()
+            
+            lastPanTranslation = translation
+        } else if gesture.state == .ended || gesture.state == .cancelled {
+            isPanning = false
+            lastPanTranslation = .zero
+        }
+    }
+    
+    private func updateMapTransform() {
+        // 확대/축소와 드래그를 결합한 transform 적용
+        mapContainerView.transform = CGAffineTransform(scaleX: zoomScale, y: zoomScale)
+        mapContainerView.center = CGPoint(x: bounds.midX + panOffset.x, y: bounds.midY + panOffset.y)
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension MiniMapView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // 핀치와 팬 제스처가 동시에 인식되지 않도록 함
+        if gestureRecognizer is UIPinchGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer {
+            return false
+        }
+        if gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is UIPinchGestureRecognizer {
+            return false
+        }
+        return true
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let panGesture = gestureRecognizer as? UIPanGestureRecognizer {
+            // 두 손가락이 있으면 팬 제스처 비활성화
+            return panGesture.numberOfTouches == 1
+        }
+        if let pinchGesture = gestureRecognizer as? UIPinchGestureRecognizer {
+            // 두 손가락이 있어야 핀치 제스처 활성화
+            return pinchGesture.numberOfTouches == 2
+        }
+        return true
     }
 }
 
@@ -212,3 +299,4 @@ extension MiniMapView {
         return SIMD2<Float>(Float(arPoint.x), Float(arPoint.y))
     }
 }
+

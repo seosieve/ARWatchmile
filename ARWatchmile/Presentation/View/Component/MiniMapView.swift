@@ -15,6 +15,14 @@ class MiniMapView: UIView {
     private var resolvedCount: Int = 0
     private var affineTransform: CGAffineTransform?
     
+    // 핀치 확대/축소 관련 프로퍼티
+    private var zoomScale: CGFloat = 1.0
+    private let minZoomScale: CGFloat = 0.5
+    private let maxZoomScale: CGFloat = 3.0
+    
+    // 모든 맵 요소들을 담는 컨테이너 뷰
+    private var mapContainerView = UIView()
+    
     private var convensiaImageView = UIImageView().then {
         $0.image = UIImage(named: Constants.convensiaImage)
         $0.contentMode = .scaleAspectFit
@@ -55,15 +63,47 @@ class MiniMapView: UIView {
     }
     
     private func setupUI() {
-        addSubview(convensiaImageView)
+        // 컨테이너 뷰 추가
+        addSubview(mapContainerView)
+        mapContainerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        mapContainerView.addSubview(convensiaImageView)
         convensiaImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        addSubview(playerDot)
+        mapContainerView.addSubview(playerDot)
         playerDot.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(8)
+        }
+        
+        // 핀치 제스처 추가
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        addGestureRecognizer(pinchGesture)
+    }
+}
+
+// MARK: - 핀치 확대/축소 기능
+extension MiniMapView {
+    @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        guard gesture.numberOfTouches == 2 else { return }
+        
+        if gesture.state == .changed {
+            let scale = gesture.scale
+            let newScale = zoomScale * scale
+            let clampedScale = max(minZoomScale, min(maxZoomScale, newScale))
+            
+            guard clampedScale != zoomScale else { return }
+            
+            zoomScale = clampedScale
+            
+            // 컨테이너 뷰만 transform하면 모든 자식 뷰들이 함께 확대/축소됨
+            mapContainerView.transform = CGAffineTransform(scaleX: zoomScale, y: zoomScale)
+            
+            gesture.scale = 1.0
         }
     }
 }
@@ -84,7 +124,7 @@ extension MiniMapView {
         
         for (id, poi) in poiDic {
             let anchorView = makeDotView(id: id, location: SIMD2(x: poi.x, y: poi.y), color: .green)
-            addSubview(anchorView)
+            mapContainerView.addSubview(anchorView)
             pointOfInterestViews.append(anchorView)
         }
     }
@@ -94,7 +134,7 @@ extension MiniMapView {
         
         for anchor in cloudAnchors {
             let anchorView = makeDotView(id: anchor.id, location: SIMD2(anchor: anchor), color: .lightGray)
-            addSubview(anchorView)
+            mapContainerView.addSubview(anchorView)
             cloudAnchorViews.append(anchorView)
         }
     }
@@ -110,7 +150,7 @@ extension MiniMapView {
         
         for anchor in cloudAnchors {
             let anchorView = makeDotView(id: anchor.id, location: SIMD2(anchor: anchor), color: .blue)
-            addSubview(anchorView)
+            mapContainerView.addSubview(anchorView)
             affineAnchorViews.append(anchorView)
         }
     }

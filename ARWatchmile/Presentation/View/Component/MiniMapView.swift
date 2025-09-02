@@ -50,6 +50,7 @@ class MiniMapView: UIView {
         guard firstLayout else { return }
         firstLayout = false
         ratio = Float(bounds.size.width / Constants.originMapSize.width)
+        layoutPointOfInterests()
         layoutAnchorPoints()
     }
     
@@ -79,7 +80,13 @@ extension MiniMapView {
 // MARK: - Anchor Point 배치 관련 함수들
 extension MiniMapView {
     private func layoutPointOfInterests() {
+        let poiDic = MapDataRepository.shared.getPointOfInterests()
         
+        for (id, poi) in poiDic {
+            let anchorView = makeDotView(id: id, location: SIMD2(x: poi.x, y: poi.y), color: .green)
+            addSubview(anchorView)
+            pointOfInterestViews.append(anchorView)
+        }
     }
     
     private func layoutAnchorPoints() {
@@ -129,22 +136,6 @@ extension MiniMapView {
         
         playerDot.backgroundColor = .green
         playerDot.center = CGPoint(x: transformedPoint.x, y: transformedPoint.y)
-        
-//        print(mapToAR(SIMD2(2964, 273)))
-//        let mapPoint = CGPoint(x: 2964.0, y: 273.0)
-//        
-//        let arPoint = mapPoint.applying(affineTransform.inverted())
-//        print(arPoint)  // AR 좌표
-    }
-    
-    func mapToAR(_ mapPos: SIMD2<Float>) -> SIMD2<Float>? {
-        guard let affine = affineTransform else { return nil }
-        
-        // Map 좌표를 ratio로 나누어서 원래 AR 좌표 스케일에 맞춤
-        let point = CGPoint(x: CGFloat(mapPos.x) * CGFloat(ratio), y: CGFloat(mapPos.y) * CGFloat(ratio))
-        
-        let arPoint = point.applying(affine.inverted())
-        return SIMD2<Float>(Float(arPoint.x), Float(arPoint.y))
     }
     
     func calculateAffine(affineAnchors: [ResolvedAnchor]) {
@@ -159,5 +150,25 @@ extension MiniMapView {
         }
         
         affineTransform = AffineTransform.calculate(from: sourcePoints, to: targetPoints)
+    }
+}
+
+// MARK: - POI AR위치 역연산
+extension MiniMapView {
+    func calculatePOIARPosition() {
+        guard affineTransform != nil else { return }
+        let poiDic = MapDataRepository.shared.getPointOfInterests()
+        let position = poiDic.compactMap { mapToAR(SIMD2<Float>(x: $0.value.x, y: $0.value.x)) }
+        ARDataRepository.shared.setPointOfInterests(position: position)
+    }
+    
+    func mapToAR(_ mapPos: SIMD2<Float>) -> SIMD2<Float>? {
+        guard let affine = affineTransform else { return nil }
+        
+        // Map 좌표를 ratio로 나누어서 원래 AR 좌표 스케일에 맞춤
+        let point = CGPoint(x: CGFloat(mapPos.x) * CGFloat(ratio), y: CGFloat(mapPos.y) * CGFloat(ratio))
+        
+        let arPoint = point.applying(affine.inverted())
+        return SIMD2<Float>(Float(arPoint.x), Float(arPoint.y))
     }
 }

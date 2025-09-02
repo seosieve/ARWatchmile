@@ -114,8 +114,6 @@ extension ARCoreViewController {
     func bindNewAnchors() {
         viewModel.newAnchorPublisher
             .sink { [weak self] newAnchor in
-                // Anchor 색 변경
-//                print("새 anchor 추가됨:", UserDefaultsManager.shared.getAnchorName(id: newAnchor.id))
                 self?.miniMapView.changeResolvedColor(of: newAnchor.id, color: .darkGray)
             }
             .store(in: &cancellables)
@@ -127,6 +125,7 @@ extension ARCoreViewController {
                 self?.logVisualizeView.affaineAnchorLog(affineAnchors: anchors)
                 self?.miniMapView.layoutAffineAnchorPoints(affineAnchors: anchors)
                 self?.miniMapView.calculateAffine(affineAnchors: anchors)
+                self?.miniMapView.calculatePOIARPosition()
             }
             .store(in: &cancellables)
     }

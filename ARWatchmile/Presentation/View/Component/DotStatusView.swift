@@ -10,7 +10,6 @@ import Then
 import SnapKit
 
 class DotStatusView: UIView {
-    
     private let lightGrayDot = UIView().then {
         $0.backgroundColor = .lightGray
         $0.layer.cornerRadius = 4

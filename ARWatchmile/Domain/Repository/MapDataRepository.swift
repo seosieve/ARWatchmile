@@ -24,4 +24,9 @@ final class MapDataRepository {
         guard let mapData else { return [] }
         return mapData.data.floor[0].anchor
     }
+    
+    func getPointOfInterests() -> [String : POI] {
+        guard let mapData else { return [:] }
+        return mapData.data.poi
+    }
 }

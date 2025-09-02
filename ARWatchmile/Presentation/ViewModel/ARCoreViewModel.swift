@@ -27,6 +27,8 @@ class ARCoreViewModel {
     var affineAnchorPublisher = PassthroughSubject<[ResolvedAnchor], Never>()
     var newAnchorPublisher = PassthroughSubject<ResolvedAnchor, Never>()
     
+    private var resolvedGARAnchors: [GARAnchor] = []
+    
     init(selectedAnchor: Set<String>) {
         resolvedAnchorIds = Array(selectedAnchor)
         resolveAnchors()
@@ -34,12 +36,14 @@ class ARCoreViewModel {
     
     private func resolveAnchors() {
         guard createGARSession(), let garSession else { return }
+        
         for anchorId in resolvedAnchorIds {
             if let future = try? garSession.resolveCloudAnchor(anchorId, completionHandler: { [weak self] anchor, cloudState in
                 guard let self = self else { return }
                 guard let anchor = anchor else { return }
                 
                 if cloudState == .success {
+                    self.resolvedGARAnchors.append(anchor)
                     // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
                     // Resolve된 Anchor
@@ -47,6 +51,11 @@ class ARCoreViewModel {
                     newAnchorPublisher.send(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
                     // Resolve된 Anchor 개수가 3개 이상일때 affineAnchorPublisher 초기화
                     setAffineAnchors(resolvedAnchors: resolvedAnchors)
+                    
+                    if resolvedGARAnchors.count >= 2 {
+                        let oldestAnchor = resolvedGARAnchors.removeFirst()
+                        garSession.remove(oldestAnchor)
+                    }
                 } else {
                     print("Failed to resolve \(anchorId): ")
                 }
@@ -76,14 +85,34 @@ class ARCoreViewModel {
     
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
+        // Test
+        print("GARSession active anchors count: \(garFrame.anchors.count)")
+        
         cameraPos = frame.camera.transform.translation
         
         for garAnchor in garFrame.anchors {
             // 이미 배치한 model 위치 이동
             if let model = resolvedModels[garAnchor.identifier] {
-                var transform = Transform(matrix: garAnchor.transform)
-                transform.scale *= SIMD3<Float>(5.0, 5.0, 5.0)  // 기존 matrix 스케일 고려
-                model.transform = transform
+                model.transform = Transform(matrix: garAnchor.transform)
+                continue
+            }
+            
+            // Model 초기 배치
+            guard let model = createCloudAnchorModel() else { continue }
+            resolvedModels[garAnchor.identifier] = model
+            model.transform = Transform(matrix: garAnchor.transform)
+            
+            worldOrigin.addChild(model)
+        }
+    }
+    
+    func updatePOIs(frame: ARFrame) {
+        guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
+        
+        for garAnchor in garFrame.anchors {
+            // 이미 배치한 model 위치 이동
+            if let model = resolvedModels[garAnchor.identifier] {
+                model.transform = Transform(matrix: garAnchor.transform)
                 continue
             }
             

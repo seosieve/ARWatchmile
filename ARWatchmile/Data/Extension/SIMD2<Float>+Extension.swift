@@ -11,4 +11,8 @@ extension SIMD2<Float> {
     init(anchor: CloudAnchor) {
         self.init(Float(anchor.x) , Float(anchor.y))
     }
+    
+    init(x: Int, y: Int) {
+        self.init(Float(x) , Float(y))
+    }
 }

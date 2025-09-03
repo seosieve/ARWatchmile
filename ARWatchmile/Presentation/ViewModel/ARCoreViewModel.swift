@@ -47,8 +47,9 @@ class ARCoreViewModel {
                     // AnchorId와 identifier 맵핑 - update에서 AnchorId 사용하기 위함
                     self.anchorIdMap[anchor.identifier] = anchorId
                     // Resolve된 Anchor
-                    resolvedAnchors.append(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
-                    newAnchorPublisher.send(ResolvedAnchor(id: anchorId, location: anchor.transform.translation))
+                    let anchorName = MapDataRepository.shared.getAnchorName(id: anchorId)
+                    resolvedAnchors.append(ResolvedAnchor(id: anchorId, name: anchorName, location: anchor.transform.translation))
+                    newAnchorPublisher.send(ResolvedAnchor(id: anchorId, name: anchorName, location: anchor.transform.translation))
                     // Resolve된 Anchor 개수가 3개 이상일때 affineAnchorPublisher 초기화
                     setAffineAnchors(resolvedAnchors: resolvedAnchors)
                     

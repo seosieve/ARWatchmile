@@ -34,4 +34,9 @@ final class MapDataRepository {
         guard let mapData else { return [:] }
         return mapData.data.poi
     }
+    
+    func getAnchorName(id: String) -> String {
+        guard let mapData else { return "" }
+        return mapData.data.floor[0].anchor.first(where: { $0.id == id })?.name ?? ""
+    }
 }

@@ -42,13 +42,7 @@ class LogVisualizeView: UIView {
     }
     
     func affaineAnchorLog(affineAnchors: [ResolvedAnchor]) {
-        var textArr: [String] = []
-        
-        for anchor in affineAnchors {
-            let dic = UserDefaultsManager.shared.anchorIdDictionary.filter{ $0.value == anchor.id }.first!
-            textArr.append(dic.key)
-        }
-        
+        let textArr = affineAnchors.map{ $0.name }
         updateLog(textArr.joined(separator: ", "))
     }
 }

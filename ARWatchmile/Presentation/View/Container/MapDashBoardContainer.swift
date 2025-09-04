@@ -69,7 +69,7 @@ class MapDashBoardContainer: UIView {
             make.left.equalToSuperview()
             make.right.equalToSuperview()
             make.bottom.equalToSuperview()
-            make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.originConvensiaMapRatio)
+            make.height.equalTo(miniMapView.snp.width).multipliedBy(Constants.current.ratio)
         }
         
         self.addSubview(resetButton)

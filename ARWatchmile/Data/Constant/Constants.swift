@@ -16,18 +16,26 @@ enum Constants {
     static let anchorIdDictionaryKey = "AnchorIdDictionary"
     /// 3D model object filename.
     static let cloudAnchorName = "cloud_anchor"
-    /// Office map image asset name.
-    static let officeImage = "VestellaOfficeMap"
-    /// Office map image aspect ratio.
-    static let originOfficeMapSize: CGSize = CGSize(width: 4554.0, height: 3015.0)
-    /// Office map image aspect ratio.
-    static let originOfficeMapRatio: CGFloat = originOfficeMapSize.height / originOfficeMapSize.width
-    /// Office map image asset name.
-    static let convensiaImage = "Convensia"
-    /// Office map image aspect ratio.
-    static let originConvensiaMapSize: CGSize = CGSize(width: 10088.0, height: 7545.0)
-    /// Office map image aspect ratio.
-    static let originConvensiaMapRatio: CGFloat = originConvensiaMapSize.height / originConvensiaMapSize.width
+    /// Current AR Mode.
+    static let current: AppMode = Office()
+}
+
+protocol AppMode {
+    var name: String { get }
+    var originSize: CGSize { get }
+    var ratio: CGFloat { get }
+}
+
+struct Office: AppMode {
+    let name = "Office"
+    let originSize = CGSize(width: 4554.0, height: 3015.0)
+    var ratio: CGFloat { originSize.height / originSize.width }
+}
+
+struct Convensia: AppMode {
+    let name = "Convensia"
+    let originSize = CGSize(width: 10088.0, height: 7545.0)
+    var ratio: CGFloat { originSize.height / originSize.width }
 }
 
 enum Seconds {

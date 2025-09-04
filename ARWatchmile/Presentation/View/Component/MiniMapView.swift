@@ -31,7 +31,7 @@ class MiniMapView: UIView {
     private var mapContainerView = UIView()
     
     private var convensiaImageView = UIImageView().then {
-        $0.image = UIImage(named: Constants.convensiaImage)
+        $0.image = UIImage(named: Constants.current.name)
         $0.contentMode = .scaleAspectFit
     }
     
@@ -64,7 +64,7 @@ class MiniMapView: UIView {
         super.layoutSubviews()
         guard firstLayout else { return }
         firstLayout = false
-        ratio = Float(bounds.size.width / Constants.originConvensiaMapSize.width)
+        ratio = Float(bounds.size.width / Constants.current.originSize.width)
         layoutPointOfInterests()
         layoutAnchorPoints()
     }

@@ -138,11 +138,14 @@
                     { "rphSeq": "RPH2508220000082", "srcRotSeq": "ROT2508220016637", "dscRotSeq": "ROT2508220013737" }
                 ],
                 "anchor": [
-                    { "id": "ua-2176bdc4351f88ba81705a195789551b", "name": "기업부설연구소 비상구", "x": 1316, "y": 583 },
-                    { "id": "ua-29b3bd27bc453443a010c9ff68ec7386", "name": "기업부설연구소 중앙", "x": 1316, "y": 1057 },
-                    { "id": "ua-0ab096d5a394b6837fb8c0e2db149fe6", "name": "기업부설연구소 화이트보드", "x": 677, "y": 1459 },
-                    { "id": "ua-38f273c97c0bab7afeffeac4a48294c8", "name": "기업부설연구소 무드보드", "x": 1854, "y": 1903 },
-                    { "id": "ua-f1af183115ca26b40dd5ed07d26934ca", "name": "프린터", "x": 2087, "y": 1393 },
+                    { "id": "ua-ede28109c573593affb33a02ea47e286", "name": "C1", "x": 1166, "y": 781 },
+                    { "id": "ua-c554ac844bb283f3a976eb7ae6fee71f", "name": "C2", "x": 843, "y": 717 },
+                    { "id": "ua-a98f6aefa2ec00feaf99e427bd9c4dab", "name": "C3", "x": 966, "y": 1146 },
+                    { "id": "ua-0fa765d3cfff9cf770930fb26888183a", "name": "C4", "x": 1117, "y": 1599 },
+                    { "id": "ua-d21eb9ad7f304031e1cce6e1049b35ed", "name": "C5", "x": 925, "y": 1950 },
+                    { "id": "ua-df9ef79c57667ec5d1d14e77e6cef734", "name": "C6", "x": 1449, "y": 1729 },
+                    { "id": "ua-36429c68b8f6a525869f6f728f3fd679", "name": "C7", "x": 1690, "y": 1723 },
+                    { "id": "ua-190afb7de1a1e688cf7c135634803fad", "name": "C8", "x": 2407, "y": 1738 }
                 ]
             }
         ]

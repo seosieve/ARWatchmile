@@ -17,6 +17,15 @@ final class ARCoreViewController: UIViewController {
     private var viewModel: ARCoreViewModel
     private var cancellables = Set<AnyCancellable>()
     
+    init(viewModel: ARCoreViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var arView = ARView().then {
         $0.frame = view.bounds
         $0.cameraMode = .ar
@@ -31,15 +40,6 @@ final class ARCoreViewController: UIViewController {
     
     private var mapDashBoardContainer = MapDashBoardContainer()
     
-    init(viewModel: ARCoreViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -47,16 +47,6 @@ final class ARCoreViewController: UIViewController {
         setupAR()
         setupUI()
         setupCombine()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     private func setupAR() {

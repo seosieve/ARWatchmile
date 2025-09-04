@@ -65,12 +65,10 @@ class MiniMapView: UIView {
         guard firstLayout else { return }
         firstLayout = false
         ratio = Float(bounds.size.width / Constants.current.originSize.width)
-        layoutPointOfInterests()
         layoutAnchorPoints()
     }
     
     private func setupUI() {
-        // 컨테이너 뷰 추가
         addSubview(mapContainerView)
         mapContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

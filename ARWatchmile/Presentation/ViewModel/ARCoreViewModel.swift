@@ -36,7 +36,7 @@ class ARCoreViewModel {
     
     private func resolveAnchors() {
         guard createGARSession(), let garSession else { return }
-        
+        print(resolvedAnchorIds.count)
         for anchorId in resolvedAnchorIds {
             if let future = try? garSession.resolveCloudAnchor(anchorId, completionHandler: { [weak self] anchor, cloudState in
                 guard let self = self else { return }
@@ -86,8 +86,6 @@ class ARCoreViewModel {
     
     func updateResolvedAnchors(frame: ARFrame) {
         guard let garSession = garSession, let garFrame = try? garSession.update(frame) else { return }
-        // Test
-        print("GARSession active anchors count: \(garFrame.anchors.count)")
         
         cameraPos = frame.camera.transform.translation
         
